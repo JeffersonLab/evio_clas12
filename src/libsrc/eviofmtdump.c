@@ -210,7 +210,7 @@ int eviofmtdump(int *iarr, int nwrd, unsigned char *ifmt, int nfmt,
                 /* left parenthesis - set new lv[] */
                 if (kcnf == 0) {
 
-                    indent();
+                    indent(9);
                     xml += sprintf(xml,"\n%s<repeat ", indentStr);
 
                     if (repeatFromN) {
