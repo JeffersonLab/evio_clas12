@@ -131,8 +131,8 @@ evCloseBank(unsigned int *buf, int fragtag, int fragnum, int banktag, int banknu
   len2 = (buf[ind2]&0xffff) + 1; /* tagsegment length */
   ind3 = ind2 + len2; /* index of the internal bank */
 
-  dataout = (unsigned int *) ( ( ((unsigned int)b08+3)/4 ) * 4);
-  padding = (unsigned int)dataout - (unsigned int)b08;
+  dataout = (unsigned int *) ( ( ((unsigned long)b08+3)/4 ) * 4);
+  padding = (unsigned long)dataout - (unsigned long)b08;
   buf[ind3+1] |= (padding&0x3)<<14;
 
   /* the number of DATA words */
