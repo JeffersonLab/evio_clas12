@@ -48,7 +48,7 @@ class evioToStringConfig;
 typedef evioDOMTree* evioDOMTreeP;                   /**<Pointer to evioDOMTree.*/
 typedef evioDOMNode* evioDOMNodeP;                   /**<Pointer to evioDOMNode, only way to access nodes.*/
 typedef list<evioDOMNodeP>  evioDOMNodeList;         /**<List of pointers to evioDOMNode.*/
-typedef auto_ptr<evioDOMNodeList> evioDOMNodeListP;  /**<auto-ptr of list of evioDOMNode pointers, returned by getNodeList.*/
+typedef std::unique_ptr<evioDOMNodeList> evioDOMNodeListP;  /**<auto-ptr of list of evioDOMNode pointers, returned by getNodeList.*/
 
 
 // should lists contain shared pointers?

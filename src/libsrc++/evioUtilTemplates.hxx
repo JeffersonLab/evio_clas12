@@ -35,25 +35,25 @@ template <typename T> class typeIs;
 template <typename T> class evioUtil {
 
 public:
-  static int evioContentType(void) throw(evioException) {
+  static int evioContentType(void) {
     throw(evioException(0,"?evioUtil<T>::evioContentType...unsupported data type: "+string(typeid(T).name()),
                         __FILE__,__FUNCTION__,__LINE__));
     return(0x0);
   }
 };
 
-template <> class evioUtil<uint32_t>     {public: static int evioContentType(void)  throw(evioException) {return(0x1);}};
-template <> class evioUtil<float>        {public: static int evioContentType(void)  throw(evioException) {return(0x2);}};
-template <> class evioUtil<string>       {public: static int evioContentType(void)  throw(evioException) {return(0x3);}};
-template <> class evioUtil<string&>      {public: static int evioContentType(void)  throw(evioException) {return(0x3);}};
-template <> class evioUtil<int16_t>      {public: static int evioContentType(void)  throw(evioException) {return(0x4);}};
-template <> class evioUtil<uint16_t>     {public: static int evioContentType(void)  throw(evioException) {return(0x5);}};
-template <> class evioUtil<int8_t>       {public: static int evioContentType(void)  throw(evioException) {return(0x6);}};
-template <> class evioUtil<uint8_t>      {public: static int evioContentType(void)  throw(evioException) {return(0x7);}};
-template <> class evioUtil<double>       {public: static int evioContentType(void)  throw(evioException) {return(0x8);}};
-template <> class evioUtil<int64_t>      {public: static int evioContentType(void)  throw(evioException) {return(0x9);}};
-template <> class evioUtil<uint64_t>     {public: static int evioContentType(void)  throw(evioException) {return(0xa);}};
-template <> class evioUtil<int32_t>      {public: static int evioContentType(void)  throw(evioException) {return(0xb);}};
+template <> class evioUtil<uint32_t>     {public: static int evioContentType(void) {return(0x1);}};
+template <> class evioUtil<float>        {public: static int evioContentType(void) {return(0x2);}};
+template <> class evioUtil<string>       {public: static int evioContentType(void) {return(0x3);}};
+template <> class evioUtil<string&>      {public: static int evioContentType(void) {return(0x3);}};
+template <> class evioUtil<int16_t>      {public: static int evioContentType(void) {return(0x4);}};
+template <> class evioUtil<uint16_t>     {public: static int evioContentType(void) {return(0x5);}};
+template <> class evioUtil<int8_t>       {public: static int evioContentType(void) {return(0x6);}};
+template <> class evioUtil<uint8_t>      {public: static int evioContentType(void) {return(0x7);}};
+template <> class evioUtil<double>       {public: static int evioContentType(void) {return(0x8);}};
+template <> class evioUtil<int64_t>      {public: static int evioContentType(void) {return(0x9);}};
+template <> class evioUtil<uint64_t>     {public: static int evioContentType(void) {return(0xa);}};
+template <> class evioUtil<int32_t>      {public: static int evioContentType(void) {return(0xb);}};
 
 
 //-----------------------------------------------------------------------------
@@ -67,7 +67,7 @@ template <> class evioUtil<int32_t>      {public: static int evioContentType(voi
  * @param num Node num
  * @return Pointer to new node
  */
-template <typename T> evioDOMNodeP evioDOMNode::createEvioDOMNode(uint16_t tag, uint8_t num) throw(evioException) {
+template <typename T> evioDOMNodeP evioDOMNode::createEvioDOMNode(uint16_t tag, uint8_t num) {
   return(new evioDOMLeafNode<T>(NULL,tag,num));
 }
 
@@ -81,10 +81,10 @@ template <typename T> evioDOMNodeP evioDOMNode::createEvioDOMNode(uint16_t tag, 
  * @param dictionary Dictionary to use
  * @return Pointer to new node
  */
-template <typename T> evioDOMNodeP evioDOMNode::createEvioDOMNode(const string &name, const evioDictionary *dictionary) throw(evioException) {
+template <typename T> evioDOMNodeP evioDOMNode::createEvioDOMNode(const string &name, const evioDictionary *dictionary) {
 
   if(dictionary!=NULL) {
-    tagNum tn = dictionary->getTagNum(name);
+    tagNum tn = ((evioDictionary*)dictionary)->getTagNum(name);
     return(new evioDOMLeafNode<T>(NULL,tn.first,tn.second));
   } else {
     throw(evioException(0,"?evioDOMNode constructor...NULL dictionary for bank name: " + name,__FILE__,__FUNCTION__,__LINE__));
@@ -104,7 +104,7 @@ template <typename T> evioDOMNodeP evioDOMNode::createEvioDOMNode(const string &
  * @return Pointer to new node
  */
 template <typename T> evioDOMNodeP evioDOMNode::createEvioDOMNode(uint16_t tag, uint8_t num, const vector<T> &tVec)
-  throw(evioException) {
+  {
   return(new evioDOMLeafNode<T>(NULL,tag,num,tVec));
 }
 
@@ -120,10 +120,10 @@ template <typename T> evioDOMNodeP evioDOMNode::createEvioDOMNode(uint16_t tag, 
  * @return Pointer to new node
  */
 template <typename T> evioDOMNodeP evioDOMNode::createEvioDOMNode(const string &name, const evioDictionary *dictionary, const vector<T> &tVec)
-  throw(evioException) {
+  {
 
   if(dictionary!=NULL) {
-    tagNum tn = dictionary->getTagNum(name);
+    tagNum tn = ((evioDictionary*)dictionary)->getTagNum(name);
     return(new evioDOMLeafNode<T>(NULL,tn.first,tn.second,tVec));
   } else {
     throw(evioException(0,"?evioDOMNode constructor...NULL dictionary for bank name: " + name,__FILE__,__FUNCTION__,__LINE__));
@@ -144,7 +144,7 @@ template <typename T> evioDOMNodeP evioDOMNode::createEvioDOMNode(const string &
  * @return Pointer to new node
  */
 template <typename T> evioDOMNodeP evioDOMNode::createEvioDOMNode(uint16_t tag, uint8_t num, const T* t, int len)
-  throw(evioException) {
+  {
   return(new evioDOMLeafNode<T>(NULL,tag,num,t,len));
 }
 
@@ -161,10 +161,10 @@ template <typename T> evioDOMNodeP evioDOMNode::createEvioDOMNode(uint16_t tag, 
  * @return Pointer to new node
  */
 template <typename T> evioDOMNodeP evioDOMNode::createEvioDOMNode(const string &name, const evioDictionary *dictionary, const T* t, int len)
-  throw(evioException) {
+  {
 
   if(dictionary!=NULL) {
-    tagNum tn = dictionary->getTagNum(name);
+    tagNum tn = ((evioDictionary*)dictionary)->getTagNum(name);
     return(new evioDOMLeafNode<T>(NULL,tn.first,tn.second,t,len));
   } else {
     throw(evioException(0,"?evioDOMNode constructor...NULL dictionary for bank name: " + name,__FILE__,__FUNCTION__,__LINE__));
@@ -186,10 +186,10 @@ template <typename T> evioDOMNodeP evioDOMNode::createEvioDOMNode(const string &
  * @return Pointer to new node
  */
 template <typename T> evioDOMNodeP evioDOMNode::createEvioDOMNode(const string &name, const evioDictionary *dictionary, T *t, 
-                                                                  void *userArg, ContainerType cType) throw(evioException) {
+                                                                  void *userArg, ContainerType cType) {
 
   if(dictionary!=NULL) {
-    tagNum tn = dictionary->getTagNum(name);
+    tagNum tn = ((evioDictionary*)dictionary)->getTagNum(name);
     evioDOMContainerNode *c = new evioDOMContainerNode(NULL,tn.first,tn.second,cType);
     t->serialize(c,userArg);
     return(c);
@@ -215,7 +215,7 @@ template <typename T> evioDOMNodeP evioDOMNode::createEvioDOMNode(const string &
  */
 template <typename T> evioDOMNodeP evioDOMNode::createEvioDOMNode(uint16_t tag, uint8_t num, T *t, 
                                                                   void* T::*mfp(evioDOMNodeP c, void *userArg),
-                                                                  void *userArg, ContainerType cType) throw(evioException) {
+                                                                  void *userArg, ContainerType cType) {
   evioDOMContainerNode *c = new evioDOMContainerNode(NULL,tag,num,cType);
   t->mfp(c,userArg);
   return(c);
@@ -237,10 +237,10 @@ template <typename T> evioDOMNodeP evioDOMNode::createEvioDOMNode(uint16_t tag, 
  */
 template <typename T> evioDOMNodeP evioDOMNode::createEvioDOMNode(const string &name, const evioDictionary *dictionary, T *t, 
                                                                   void* T::*mfp(evioDOMNodeP c, void *userArg),
-                                                                  void *userArg, ContainerType cType) throw(evioException) {
+                                                                  void *userArg, ContainerType cType) {
 
   if(dictionary!=NULL) {
-    tagNum tn = dictionary->getTagNum(name);
+    tagNum tn = ((evioDictionary*)dictionary)->getTagNum(name);
     evioDOMContainerNode *c = new evioDOMContainerNode(NULL,tn.first,tn.second,cType);
     t->mfp(c,userArg);
     return(c);
@@ -260,7 +260,7 @@ template <typename T> evioDOMNodeP evioDOMNode::createEvioDOMNode(const string &
  * @param tVal Data to be added.
  */
 
-template <typename T> void evioDOMNode::append(T tVal) throw(evioException) {
+template <typename T> void evioDOMNode::append(T tVal) {
 
   static int errCount = 0;
 
@@ -371,7 +371,7 @@ template <typename T> void evioDOMNode::append(T tVal) throw(evioException) {
  * Must be done this way because C++ forbids templated virtual functions...ejw, dec-2006
  * @param tVec vector<T> of data to add to leaf node
  */
-template <typename T> void evioDOMNode::append(const vector<T> &tVec) throw(evioException) {
+template <typename T> void evioDOMNode::append(const vector<T> &tVec) {
   if(contentType!=evioUtil<T>::evioContentType())
     throw(evioException(0,"?evioDOMNode::append...not appropriate node",__FILE__,__FUNCTION__,__LINE__));
   evioDOMLeafNode<T> *l = static_cast<evioDOMLeafNode<T>*>(this);
@@ -388,7 +388,7 @@ template <typename T> void evioDOMNode::append(const vector<T> &tVec) throw(evio
  * @param tBuf Buffer of data of type T
  * @param len Length of buffer
  */
-template <typename T> void evioDOMNode::append(const T* tBuf, int len) throw(evioException) {
+template <typename T> void evioDOMNode::append(const T* tBuf, int len) {
   if(contentType!=evioUtil<T>::evioContentType())
     throw(evioException(0,"?evioDOMNode::append...not appropriate node",__FILE__,__FUNCTION__,__LINE__));
   evioDOMLeafNode<T> *l = static_cast<evioDOMLeafNode<T>*>(this);
@@ -404,7 +404,7 @@ template <typename T> void evioDOMNode::append(const T* tBuf, int len) throw(evi
  * Must be done this way because C++ forbids templated virtual functions...ejw, dec-2006
  * @param tVec vector<T> of data
  */
-template <typename T> void evioDOMNode::replace(const vector<T> &tVec) throw(evioException) {
+template <typename T> void evioDOMNode::replace(const vector<T> &tVec) {
   if(contentType!=evioUtil<T>::evioContentType())
     throw(evioException(0,"?evioDOMNode::replace...not correctl leaf node",__FILE__,__FUNCTION__,__LINE__));
   evioDOMLeafNode<T> *l = static_cast<evioDOMLeafNode<T>*>(this);
@@ -421,7 +421,7 @@ template <typename T> void evioDOMNode::replace(const vector<T> &tVec) throw(evi
  * @param tBuf Buffer of data of type T
  * @param len Length of buffer
  */
-template <typename T> void evioDOMNode::replace(const T* tBuf, int len) throw(evioException) {
+template <typename T> void evioDOMNode::replace(const T* tBuf, int len) {
   if(contentType!=evioUtil<T>::evioContentType())
     throw(evioException(0,"?evioDOMNode::replace...not appropriate node",__FILE__,__FUNCTION__,__LINE__));
   evioDOMLeafNode<T> *l = static_cast<evioDOMLeafNode<T>*>(this);
@@ -437,7 +437,7 @@ template <typename T> void evioDOMNode::replace(const T* tBuf, int len) throw(ev
  * Must be done this way because C++ forbids templated virtual functions...ejw, dec-2006
  * @return Pointer to vector<T>
  */
-template <typename T> vector<T> *evioDOMNode::getVector(void) throw(evioException) {
+template <typename T> vector<T> *evioDOMNode::getVector(void) {
   if(contentType!=evioUtil<T>::evioContentType())return(NULL);
   evioDOMLeafNode<T> *l = static_cast<evioDOMLeafNode<T>*>(this);
   return(&l->data);
@@ -452,7 +452,7 @@ template <typename T> vector<T> *evioDOMNode::getVector(void) throw(evioExceptio
  * @param tVal Data to be added
  * @return Reference to this
  */
-template <typename T> evioDOMNode& evioDOMNode::operator<<(T tVal) throw(evioException) {
+template <typename T> evioDOMNode& evioDOMNode::operator<<(T tVal) {
   append(tVal);
   return(*this);
 }
@@ -466,7 +466,7 @@ template <typename T> evioDOMNode& evioDOMNode::operator<<(T tVal) throw(evioExc
  * @param tVec vector<T> of data to add to leaf node
  * @return Reference to this
  */
-template <typename T> evioDOMNode& evioDOMNode::operator<<(const vector<T> &tVec) throw(evioException) {
+template <typename T> evioDOMNode& evioDOMNode::operator<<(const vector<T> &tVec) {
   append(tVec);
   return(*this);
 }
@@ -480,7 +480,7 @@ template <typename T> evioDOMNode& evioDOMNode::operator<<(const vector<T> &tVec
  * @param pred Predicate
  * @return List of children satisfying predicate
  */
-template <class Predicate> evioDOMNodeListP evioDOMNode::getChildren(Predicate pred) throw(evioException) {
+template <class Predicate> evioDOMNodeListP evioDOMNode::getChildren(Predicate pred) {
   evioDOMNodeListP l = getChildren();
   if(l.get()==NULL)return(l);
   l->remove_if(not1(pred));
@@ -500,7 +500,7 @@ template <class Predicate> evioDOMNodeListP evioDOMNode::getChildren(Predicate p
  * @param num Node num
  */
 template <typename T> evioDOMLeafNode<T>::evioDOMLeafNode(evioDOMNodeP par, uint16_t tag, uint8_t num)
-  throw(evioException) : evioDOMNode(par,tag,num,evioUtil<T>::evioContentType()) {
+  : evioDOMNode(par,tag,num,evioUtil<T>::evioContentType()) {
 }
 
 
@@ -515,7 +515,7 @@ template <typename T> evioDOMLeafNode<T>::evioDOMLeafNode(evioDOMNodeP par, uint
  * @param v vector<T> of data
  */
 template <typename T> evioDOMLeafNode<T>::evioDOMLeafNode(evioDOMNodeP par, uint16_t tag, uint8_t num, const vector<T> &v)
-  throw(evioException) : evioDOMNode(par,tag,num,evioUtil<T>::evioContentType()), data(v) {
+  : evioDOMNode(par,tag,num,evioUtil<T>::evioContentType()), data(v) {
 }
 
 
@@ -531,7 +531,7 @@ template <typename T> evioDOMLeafNode<T>::evioDOMLeafNode(evioDOMNodeP par, uint
  * @param ndata Length of array
  */
 template <typename T> evioDOMLeafNode<T>::evioDOMLeafNode(evioDOMNodeP par, uint16_t tag, uint8_t num, const T* p, int ndata) 
-  throw(evioException) : evioDOMNode(par,tag,num,evioUtil<T>::evioContentType()), data(p, p + ndata) {
+  : evioDOMNode(par,tag,num,evioUtil<T>::evioContentType()), data(p, p + ndata) {
 }
 
 
@@ -748,7 +748,7 @@ template <typename T> int evioDOMLeafNode<T>::getSize(void) const {
  * @param pred Function object true if node meets predicate criteria
  * @return Pointer to node list (actually auto_ptr<>)
  */
-template <class Predicate> evioDOMNodeListP evioDOMTree::getNodeList(Predicate pred) throw(evioException) {
+template <class Predicate> evioDOMNodeListP evioDOMTree::getNodeList(Predicate pred) {
   evioDOMNodeList *pList = addToNodeList(root, new evioDOMNodeList(), pred);
   return(evioDOMNodeListP(pList));
 }  
@@ -768,7 +768,7 @@ template <class Predicate> evioDOMNodeListP evioDOMTree::getNodeList(Predicate p
  * @param pred Function object true if node meets predicate criteria
  * @return Pointer to node
  */
-template <class Predicate> evioDOMNodeP evioDOMTree::getFirstNode(Predicate pred) throw(evioException) {
+template <class Predicate> evioDOMNodeP evioDOMTree::getFirstNode(Predicate pred) {
   return(findFirstNode(root,pred));
 }  
 
@@ -781,7 +781,7 @@ template <class Predicate> evioDOMNodeP evioDOMTree::getFirstNode(Predicate pred
  * @param pred Function object true if node meets predicate criteria
  * @return Pointer to node
  */
-template <class Predicate> evioDOMNodeP evioDOMTree::findFirstNode(evioDOMNodeP pNode, Predicate pred) throw(evioException) {
+template <class Predicate> evioDOMNodeP evioDOMTree::findFirstNode(evioDOMNodeP pNode, Predicate pred) {
 
 
   // check this node
@@ -811,7 +811,7 @@ template <class Predicate> evioDOMNodeP evioDOMTree::findFirstNode(evioDOMNodeP 
  * Throws exception if more than one node contains vector<T>.
  * @return Pointer to vector, NULL if no node contains vector<T>
  */
-template <typename T> vector<T> *evioDOMTree::getVectorUnique(void) throw(evioException) {
+template <typename T> vector<T> *evioDOMTree::getVectorUnique(void) {
 
   evioDOMNodeListP l = getNodeList(typeIs<T>());
   int s = l->size();
@@ -836,7 +836,7 @@ template <typename T> vector<T> *evioDOMTree::getVectorUnique(void) throw(evioEx
  * @param pred Function object true if node satisfies predicate
  * @return Pointer to vector<T>, NULL if no node containing vector<T> satisfies predicate
  */
-template <typename T, class Predicate> vector<T> *evioDOMTree::getVectorUnique(Predicate pred) throw(evioException) {
+template <typename T, class Predicate> vector<T> *evioDOMTree::getVectorUnique(Predicate pred) {
   evioDOMNodeListP l = getNodeList(pred);
 
   int c = count_if(l->begin(),l->end(),typeIs<T>());
@@ -864,7 +864,7 @@ template <typename T, class Predicate> vector<T> *evioDOMTree::getVectorUnique(P
  * @return Pointer to node list
  */
 template <class Predicate> evioDOMNodeList *evioDOMTree::addToNodeList(evioDOMNodeP pNode, evioDOMNodeList *pList, Predicate pred)
-  throw(evioException) {
+  {
 
   if(pNode==NULL)return(pList);
 
@@ -897,7 +897,7 @@ template <class Predicate> evioDOMNodeList *evioDOMTree::addToNodeList(evioDOMNo
  * @param num Node num
  * @param dataVec vector<T> of data
  */
-template <typename T> void evioDOMTree::addBank(uint16_t tag, uint8_t num, const vector<T> &dataVec) throw(evioException) {
+template <typename T> void evioDOMTree::addBank(uint16_t tag, uint8_t num, const vector<T> &dataVec) {
 
   if(root==NULL) {
     root = evioDOMNode::createEvioDOMNode(tag,num,dataVec);
@@ -926,7 +926,7 @@ template <typename T> void evioDOMTree::addBank(uint16_t tag, uint8_t num, const
  * @param dataLen Length of array
  */
 template <typename T> void evioDOMTree::addBank(uint16_t tag, uint8_t num, const T* dataBuf, int dataLen)
-  throw(evioException) {
+  {
 
   if(root==NULL) {
     root = evioDOMNode::createEvioDOMNode(tag,num,dataBuf,dataLen);
@@ -952,7 +952,7 @@ template <typename T> void evioDOMTree::addBank(uint16_t tag, uint8_t num, const
  * @param tn Leaf node tagNum
  * @param dataVec vector<T> of data
  */
-template <typename T> void evioDOMTree::addBank(tagNum tn, const vector<T> &dataVec) throw(evioException) {
+template <typename T> void evioDOMTree::addBank(tagNum tn, const vector<T> &dataVec) {
   addBank(tn.first,tn.second,dataVec);
   return;
 }
@@ -966,7 +966,7 @@ template <typename T> void evioDOMTree::addBank(tagNum tn, const vector<T> &data
  * node tagNum @param dataBuf Pointer to array containg data of type T
  * @param dataLen Length of array
  */
-template <typename T> void evioDOMTree::addBank(tagNum tn, const T* dataBuf, int dataLen) throw(evioException) {
+template <typename T> void evioDOMTree::addBank(tagNum tn, const T* dataBuf, int dataLen) {
   addBank(tn.first,tn.second,dataBuf,dataLen);
   return;
 }
@@ -980,10 +980,10 @@ template <typename T> void evioDOMTree::addBank(tagNum tn, const T* dataBuf, int
  * @param name Leaf node name
  * @param dataVec vector<T> of data
  */
-template <typename T> void evioDOMTree::addBank(const string &name, const vector<T> &dataVec) throw(evioException) {
+template <typename T> void evioDOMTree::addBank(const string &name, const vector<T> &dataVec) {
 
   if(dictionary!=NULL) {
-    tagNum tn = dictionary->getTagNum(name);
+    tagNum tn = ((evioDictionary*)dictionary)->getTagNum(name);
     addBank(tn,dataVec);
   } else {
     throw(evioException(0,"?evioDOMTree::addBank...no dictionary",__FILE__,__FUNCTION__,__LINE__));
@@ -1002,10 +1002,10 @@ template <typename T> void evioDOMTree::addBank(const string &name, const vector
  * @param dataBuf Pointer to array containg data of type T
  * @param dataLen Length of array
  */
-template <typename T> void evioDOMTree::addBank(const string &name, const T* dataBuf, int dataLen) throw(evioException) {
+template <typename T> void evioDOMTree::addBank(const string &name, const T* dataBuf, int dataLen) {
 
   if(dictionary!=NULL) {
-    tagNum tn = dictionary->getTagNum(name);
+    tagNum tn = ((evioDictionary*)dictionary)->getTagNum(name);
     addBank(tn.first,tn.second,dataBuf,dataLen);
   } else {
     throw(evioException(0,"?evioDOMTree::addBank...no dictionary",__FILE__,__FUNCTION__,__LINE__));
@@ -1024,7 +1024,7 @@ template <typename T> void evioDOMTree::addBank(const string &name, const T* dat
  * @param tVec Vector of values
  * @return Pointer to new node
  */
-template <typename T> evioDOMNodeP evioDOMTree::createNode(const string &name, const vector<T> &tVec) const throw(evioException) {
+template <typename T> evioDOMNodeP evioDOMTree::createNode(const string &name, const vector<T> &tVec) const {
   return(evioDOMNode::createEvioDOMNode(name,dictionary,tVec));
 }
 
@@ -1039,7 +1039,7 @@ template <typename T> evioDOMNodeP evioDOMTree::createNode(const string &name, c
  * @param len Length of array
  * @return Pointer to new node
  */
-template <typename T> evioDOMNodeP evioDOMTree::createNode(const string &name, const T* t, int len) const throw(evioException) {
+template <typename T> evioDOMNodeP evioDOMTree::createNode(const string &name, const T* t, int len) const {
   return(evioDOMNode::createEvioDOMNode(name,dictionary,t,len));
 }
 
@@ -1055,8 +1055,7 @@ template <typename T> evioDOMNodeP evioDOMTree::createNode(const string &name, c
  * @parme cType Container node type
  * @return Pointer to new node
  */
-template <typename T> evioDOMNodeP evioDOMTree::createNode(const string &name, T *t, void *userArg, ContainerType cType) const 
-  throw(evioException) {
+template <typename T> evioDOMNodeP evioDOMTree::createNode(const string &name, T *t, void *userArg, ContainerType cType) const {
   return(evioDOMNode::createEvioDOMNode(name,dictionary,t,userArg,cType));
 }
 
@@ -1074,7 +1073,7 @@ template <typename T> evioDOMNodeP evioDOMTree::createNode(const string &name, T
  */
 template <typename T> evioDOMNodeP evioDOMTree::createNode(const string &name, T *t, 
                                               void* T::*mfp(evioDOMNodeP c, void *userArg),
-                                              void *userArg, ContainerType cType) const throw(evioException) {
+                                              void *userArg, ContainerType cType) const {
   return(evioDOMNode::createEvioDOMNode(name,dictionary,t,mfp,userArg,cType));
 }
 
@@ -1137,7 +1136,7 @@ public:
 
   tagEquals(const string &name, evioDictionary *dictionary) : tag(0) {
     if(dictionary!=NULL) {
-      tagNum tn = dictionary->getTagNum(name); 
+      tagNum tn = ((evioDictionary*)dictionary)->getTagNum(name); 
       tag=tn.first;
     } else {
       cerr << "?tagEquals...NULL dictionary, using tag=0" << endl;
@@ -1170,7 +1169,7 @@ public:
 
   numEquals(const string &name, evioDictionary *dictionary) : num(0) {
     if(dictionary!=NULL) {
-      tagNum tn = dictionary->getTagNum(name); 
+      tagNum tn = ((evioDictionary*)dictionary)->getTagNum(name); 
       num=tn.second;
     } else {
       cerr << "?numEquals...NULL dictionary, using num=0" << endl;
@@ -1205,7 +1204,7 @@ public:
 
   tagNumEquals(const string &name, evioDictionary *dictionary) : tag(0), num(0) {
     if(dictionary!=NULL) {
-      tagNum tn = dictionary->getTagNum(name); 
+      tagNum tn = ((evioDictionary*)dictionary)->getTagNum(name); 
       tag=tn.first;
       num=tn.second;
     } else {
@@ -1221,7 +1220,7 @@ public:
 
   tagNumEquals(const string &name, const evioDOMTree *tree) : tag(0), num(0) {
     if((tree!=NULL)&&(tree->dictionary!=NULL)) {
-      tagNum tn = tree->dictionary->getTagNum(name); 
+      tagNum tn = ((evioDictionary*)(tree->dictionary))->getTagNum(name); 
       tag=tn.first;
       num=tn.second;
     } else {
@@ -1231,7 +1230,7 @@ public:
 
   tagNumEquals(const string &name, const evioDOMTree &tree) : tag(0), num(0) {
     if(tree.dictionary!=NULL) {
-      tagNum tn = tree.dictionary->getTagNum(name); 
+      tagNum tn = ((evioDictionary*)(tree.dictionary))->getTagNum(name); 
       tag=tn.first;
       num=tn.second;
     } else {
@@ -1331,7 +1330,7 @@ class parentNameEquals : public unary_function<const evioDOMNodeP, bool> {
 public:
   parentNameEquals(const string &name, const evioDictionary *dictionary) : tag(0), num(0) {
     if(dictionary!=NULL) {
-      tagNum tn = dictionary->getTagNum(name); 
+      tagNum tn = ((evioDictionary*)dictionary)->getTagNum(name); 
       tag=tn.first;
       num=tn.second;
     } else {
@@ -1340,14 +1339,14 @@ public:
   }
 
   parentNameEquals(const string &name, const evioDictionary &dictionary) : tag(0), num(0) {
-    tagNum tn = dictionary.getTagNum(name); 
+    tagNum tn = ((evioDictionary)dictionary).getTagNum(name); 
     tag=tn.first;
     num=tn.second;
   }
 
   parentNameEquals(const string &name, const evioDOMTree *tree) : tag(0), num(0) {
     if((tree!=NULL)&&(tree->dictionary!=NULL)) {
-      tagNum tn = tree->dictionary->getTagNum(name); 
+      tagNum tn = ((evioDictionary*)tree->dictionary)->getTagNum(name); 
       tag=tn.first;
       num=tn.second;
     } else {
@@ -1357,7 +1356,7 @@ public:
 
   parentNameEquals(const string &name, const evioDOMTree &tree) : tag(0), num(0) {
     if(tree.dictionary!=NULL) {
-      tagNum tn = tree.dictionary->getTagNum(name); 
+      tagNum tn = ((evioDictionary*)tree.dictionary)->getTagNum(name); 
       tag=tn.first;
       num=tn.second;
     } else {
