@@ -2,3 +2,5 @@
 *bak
 .scons*
 __pycache__
+lib
+*.o
