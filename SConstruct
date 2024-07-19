@@ -2,16 +2,17 @@ from coda import scanFiles
 
 env = Environment(CC ='g++')
 env.Append(CPPPATH = ['#src/libsrc'])
-env.Append(CPPFLAGS = ['-fPIC','-fpermissive'])
+env.Append(CPPFLAGS = ['-fPIC'])#,'-fpermissive'])
 env.Append(CXXFLAGS = ['-std=c++11'])
 
 # Build libraries
 libc   = env.Library('lib/evio',    scanFiles('src/libsrc',   accept=[ "*.c"]) )
-libcpp = env.Library('lib/evioxx',  scanFiles('src/libsrc++', accept=[ "*.cc"]))
+#libcpp = env.Library('lib/evioxx',  scanFiles('src/libsrc++', accept=[ "*.cc"]))
+#Depends(libcpp, libc)
 
 # Might as well?
-env.SharedLibrary('lib/evio',    scanFiles('src/libsrc',   accept=[ "*.c"]) )
-env.SharedLibrary('lib/evioxx',  scanFiles('src/libsrc++', accept=[ "*.cc"]))
+#env.SharedLibrary('lib/evio',    scanFiles('src/libsrc',   accept=[ "*.c"]) )
+#env.SharedLibrary('lib/evioxx',  scanFiles('src/libsrc++', accept=[ "*.cc"]))
 
 # Executables:
 #xml = env.Program('bin/evio2xml', 'src/execsrc/evio2xml.c')
@@ -26,8 +27,6 @@ env.SharedLibrary('lib/evioxx',  scanFiles('src/libsrc++', accept=[ "*.cc"]))
 #ex7 = env.Program('bin/etst7',    'src/examples/etst7.cc')
 #ex8 = env.Program('bin/etst8',    'src/examples/etst8.cc')
 #ex9 = env.Program('bin/etst9',    'src/examples/etst9.cc')
-
-Depends(libcpp, libc)
 
 #Depends(xml, libcpp)
 #Depends(cop, libcpp)
