@@ -2,12 +2,12 @@ from coda import scanFiles
 
 env = Environment(CC ='g++')
 env.Append(CPPPATH = ['#src/libsrc'])
-env.Append(CPPFLAGS = ['-fPIC'])#,'-fpermissive'])
+env.Append(CPPFLAGS = ['-fPIC'])
 env.Append(CXXFLAGS = ['-std=c++11'])
 
 # Build libraries
 libc   = env.Library('lib/evio',    scanFiles('src/libsrc',   accept=[ "*.c"]) )
-#libcpp = env.Library('lib/evioxx',  scanFiles('src/libsrc++', accept=[ "*.cc"]))
+libcpp = env.Library('lib/evioxx',  scanFiles('src/libsrc++', accept=[ "*.cc"]))
 #Depends(libcpp, libc)
 
 # Might as well?
