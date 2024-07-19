@@ -986,7 +986,7 @@ char *evStrReplace(char *orig, const char *replace, const char *with) {
      *    tmp  points to the end of the result string
      *    ins  points to the next occurrence of rep in orig
      *    orig points to the remainder of orig after "end of rep" */
-    tmp = result = malloc(strlen(orig) + (len_with - len_rep) * count + 1);
+    tmp = result = (char*)malloc(strlen(orig) + (len_with - len_rep) * count + 1);
 
     if (!result) return NULL;
 
@@ -1557,16 +1557,16 @@ int evOpenBuffer(char *buffer, uint32_t bufLen, char *flags, int *handle)
     
     /* Check flags & translate them */
     if (strcasecmp(flags, "w") == 0) {
-        flag = "wb";
+        sprintf(flag,"wb");
     }
     else if (strcasecmp(flags, "r") == 0) {
-        flag = "rb";
+        sprintf(flag,"rb");
     }
     else if (strcasecmp(flags, "a") == 0) {
-        flag = "ab";
+        sprintf(flag,"ab");
     }
     else if (strcasecmp(flags, "ra") == 0) {
-        flag = "rab";
+        sprintf(flag,"rab");
     }
     else {
         return(S_EVFILE_BADARG);
@@ -1601,10 +1601,10 @@ int evOpenSocket(int sockFd, char *flags, int *handle)
     
     /* Check flags & translate them */
     if (strcasecmp(flags, "w") == 0) {
-        flag = "ws";
+        sprintf(flag,"ws");
     }
     else if (strcasecmp(flags, "r") == 0) {
-        flag = "rs";
+        sprintf(flag,"rs");
     }
     else {
         return(S_EVFILE_BADARG);
@@ -2606,7 +2606,7 @@ static int generatePointerTable(EVFILE *a)
             /* Need more space for the table, increase by 10,000 pointers each time */
             if (evIndex >= numPointers) {
                 numPointers += 10000;
-                a->pTable = realloc(a->pTable, numPointers*sizeof(uint32_t *));
+                a->pTable = (uint32_t**)realloc(a->pTable, numPointers*sizeof(uint32_t *));
                 if (a->pTable == NULL) {
                     free(a->pTable);
                     return(S_EVFILE_ALLOCFAIL);
@@ -6177,7 +6177,7 @@ char *evPerror(int error) {
 
     static char temp[256];
 
-    switch(error) {
+    switch((long)error) {
 
         case S_SUCCESS:
             sprintf(temp, "S_SUCCESS:  action completed successfully\n");
