@@ -8,7 +8,7 @@ env.Append(CXXFLAGS = ['-std=c++11'])
 # Build libraries
 libc   = env.Library('lib/evio',    scanFiles('src/libsrc',   accept=[ "*.c"]) )
 libcpp = env.Library('lib/evioxx',  scanFiles('src/libsrc++', accept=[ "*.cc"]))
-#Depends(libcpp, libc)
+Depends(libcpp, libc)
 
 # Might as well?
 #env.SharedLibrary('lib/evio',    scanFiles('src/libsrc',   accept=[ "*.c"]) )

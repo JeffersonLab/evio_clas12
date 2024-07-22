@@ -990,10 +990,9 @@ evioDOMNodeList *evioDOMNode::getChildList(void) {
  * @return Copy of child list
  */
 
-//evioDOMNodeList *evioDOMNode::getChildren(void) {
 evioDOMNodeListP evioDOMNode::getChildren(void) {
   evioDOMNodeList *l1 = getChildList();
-  if(l1==NULL)return(evioDOMNodeListP(NULL));
+  if(l1==NULL)return(evioDOMNodeListP(nullptr));
   evioDOMNodeList *l2 = new evioDOMNodeList(l1->size());
   copy(l1->begin(), l1->end(), l2->begin());
   return(evioDOMNodeListP(l2));
@@ -2448,7 +2447,8 @@ evioDOMNodeListP evioDOMTree::getNodeList(const string &nName) {
   }
 
   // return empty list if no dictionary or name not found
-  return(*(new evioDOMNodeListP));
+  //return(*(new evioDOMNodeListP));
+  return(evioDOMNodeListP(nullptr));
 }
 
 

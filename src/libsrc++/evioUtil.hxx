@@ -604,8 +604,8 @@ public:
 private:
   evioDOMNodeP parse(const uint32_t *buf);
   int getSerializedLength(const evioDOMNodeP pNode) const;
-  int toEVIOBuffer(uint32_t *buf, const evioDOMNodeP pNode, int size);
-  void toOstream(ostream &os, const evioDOMNodeP node, int depth, const evioToStringConfig *config = &defaultToStringConfig);
+  int toEVIOBuffer(uint32_t *buf, const evioDOMNodeP pNode, int size) const;
+  void toOstream(ostream &os, const evioDOMNodeP node, int depth, const evioToStringConfig *config = &defaultToStringConfig) const;
   template <class Predicate> evioDOMNodeList *addToNodeList(evioDOMNodeP pNode, evioDOMNodeList *pList, Predicate pred);
   template <class Predicate> evioDOMNodeP findFirstNode(evioDOMNodeP pNode, Predicate pred);
 
