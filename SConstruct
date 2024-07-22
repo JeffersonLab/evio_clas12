@@ -3,7 +3,7 @@ from coda import scanFiles
 env = Environment(CC ='g++')
 env.Append(CPPPATH = ['#src/libsrc','#src/libsrc++'])
 env.Append(CPPFLAGS = ['-fPIC'])
-env.Append(CXXFLAGS = ['-std=c++11'])
+env.Append(CXXFLAGS = ['-std=c++17'])
 
 import sys
 
