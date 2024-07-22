@@ -34,7 +34,7 @@ enum {
 #define MAXXMLBUF  100000
 #define MAXDICT    5000
 #define MAXDEPTH   512
-#define min(a, b)  ( ( (a) > (b) ) ? (b) : (a) )
+//#define min(a, b)  ( ( (a) > (b) ) ? (b) : (a) )
 
 
 #define MAXEVIOBUF   10000000
@@ -47,13 +47,14 @@ enum {
 #include <string.h>
 #include <ctype.h>
 #include <expat.h>
+#include <algorithm>
 #include "evio.h"
-
+#include "zlib.h"
 
 /*  misc variables from orig evio2xml.c */
 static char *filename;
 static char *dictfilename = NULL;
-static char *dicttagname  = "dictEntry";
+static char *dicttagname  = (char*)"dictEntry";
 static char *outfilename  = NULL;
 static int gzip           = 0;
 static char *main_tag     = (char*)"evio-data";
@@ -68,7 +69,7 @@ static int nfragok        = 0;
 static int fragok[100];
 static int nnofrag        = 0;
 static int nofrag[100];
-static int pause          = 0;
+static int pause2         = 0;
 static int maxbuf         = MAXEVIOBUF;
 static int debug          = 0;
 static int done           = 0;
@@ -92,7 +93,7 @@ static int ndict = 0;
 
 
 /* fragment info */
-char *fragment_name[] = {"bank","segment","tagsegment"};
+char *fragment_name[] = {(char*)"bank",(char*)"segment",(char*)"tagsegment"};
 int fragment_offset[] = {2,1,1};
 
 
@@ -106,8 +107,8 @@ static int n64          = 2;
 
 /*  misc variables */
 static int nbuf;
-static char *event_tag    = "event";
-static char *bank2_tag    = "bank";
+static char *event_tag    = (char*)"event";
+static char *bank2_tag    = (char*)"bank";
 static char *dicttagname2 = NULL;
 static int max_depth      = -1;
 static int depth          = 0;
@@ -227,11 +228,11 @@ int main (int argc, char **argv)
     decode_command_line(argc,argv);
 
     /*allocate xml buffer*/
-    xmlbuf = malloc(MAXXMLBUF);
+    xmlbuf = (char*)malloc(MAXXMLBUF);
 
     /* allocate binary buffer and string buffer (EVIO2XML times as large) */
     unsigned int *buf = (unsigned int*)malloc(maxbuf*sizeof(unsigned int));
-    char *xml = malloc(maxbuf*sizeof(unsigned int)*EVIO2XML);
+    char *xml = (char*)malloc(maxbuf*sizeof(unsigned int)*EVIO2XML);
 
     if((buf==NULL)||(xml==NULL)) {
         int sz=maxbuf*sizeof(unsigned int);
@@ -247,7 +248,7 @@ int main (int argc, char **argv)
 
 
     /* open evio input file */
-    if((status=evOpen(filename,"r",&handle))!=0) {
+    if((status=evOpen(filename,(char*)"r",&handle))!=0) {
         printf("\n ?Unable to open file %s, status=%d, 0x%x\n\n",filename,status, status);
         exit(EXIT_FAILURE);
     }
@@ -259,7 +260,7 @@ int main (int argc, char **argv)
             out=fopen(outfilename,"w");
 #ifndef _MSC_VER
         } else {
-            out=(FILE*)gzopen(outfilename,"wb");
+            out=(FILE*)gzopen(outfilename,(char*)"wb");
 #endif
         }
     }
@@ -286,7 +287,7 @@ int main (int argc, char **argv)
         writeit(out,xml,strlen(xml));
 
 
-        if(pause!=0) {
+        if(pause2!=0) {
             printf("\n\nHit return to continue, q to quit: ");
             fgets(s,sizeof(s),stdin);
             if(tolower(s[strspn(s," \t")])=='q')done=1;
@@ -406,7 +407,7 @@ void decode_command_line(int argc, char**argv) {
             exit(EXIT_SUCCESS);
 
         } else if (strncasecmp(argv[i],"-pause",6)==0) {
-            pause=1;
+            pause2=1;
             i=i+1;
 
         } else if (strncasecmp(argv[i],"-out",4)==0) {
@@ -1002,7 +1003,7 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
 
         for(i=0; i<length; i+=n32) {
             indent();
-            for(j=i; j<min((i+n32),length); j++) {
+            for(j=i; j<std::min((i+n32),length); j++) {
                 xml+=sprintf(xml,format,data[j]);
             }
             xml+=sprintf(xml,"\n");
@@ -1029,7 +1030,7 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
                 }
                 for(i=0; i<length; i+=n32) {
                     indent();
-                    for(j=i; j<min((i+n32),length); j++) {
+                    for(j=i; j<std::min((i+n32),length); j++) {
                         xml+=sprintf(xml,format,data[j]);
                     }
                     xml+=sprintf(xml,"\n");
@@ -1045,7 +1046,7 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
                 sprintf(format,"%%#15.8g  ");
                 for(i=0; i<length; i+=n32) {
                     indent();
-                    for(j=i; j<min(i+n32,length); j++) {
+                    for(j=i; j<std::min(i+n32,length); j++) {
                         xml+=sprintf(xml,format,*(float*)&data[j]);
                     }
                     xml+=sprintf(xml,"\n");
@@ -1087,7 +1088,7 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
                 s=(short*)&data[0];
                 for(i=0; i<numShorts; i+=n16) {
                     indent();
-                    for(j=i; j<min(i+n16,numShorts); j++) {
+                    for(j=i; j<std::min(i+n16,numShorts); j++) {
                         xml+=sprintf(xml,format,s[j]);
                     }
                     xml+=sprintf(xml,"\n");
@@ -1112,7 +1113,7 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
                 s=(short*)&data[0];
                 for(i=0; i<numShorts; i+=n16) {
                     indent();
-                    for(j=i; j<min(i+n16,numShorts); j++) {
+                    for(j=i; j<std::min(i+n16,numShorts); j++) {
                         xml+=sprintf(xml,format,s[j]);
                     }
                     xml+=sprintf(xml,"\n");
@@ -1137,7 +1138,7 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
                 c=(char*)&data[0];
                 for(i=0; i<numBytes; i+=n8) {
                     indent();
-                    for(j=i; j<min(i+n8,numBytes); j++) {
+                    for(j=i; j<std::min(i+n8,numBytes); j++) {
                         xml+=sprintf(xml,format,c[j]);
                     }
                     xml+=sprintf(xml,"\n");
@@ -1162,7 +1163,7 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
                 uc=(unsigned char*)&data[0];
                 for(i=0; i<numBytes; i+=n8) {
                     indent();
-                    for(j=i; j<min(i+n8,numBytes); j++) {
+                    for(j=i; j<std::min(i+n8,numBytes); j++) {
                         xml+=sprintf(xml,format,uc[j]);
                     }
                     xml+=sprintf(xml,"\n");
@@ -1178,7 +1179,7 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
                 sprintf(format,"%%#25.17g  ");
                 for(i=0; i<length/2; i+=n64) {
                     indent();
-                    for(j=i; j<min(i+n64,length/2); j++) {
+                    for(j=i; j<std::min(i+n64,length/2); j++) {
                         xml+=sprintf(xml,format,*(double*)&data[2*j]);
                     }
                     xml+=sprintf(xml,"\n");
@@ -1199,7 +1200,7 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
                 }
                 for(i=0; i<length/2; i+=n64) {
                     indent();
-                    for(j=i; j<min(i+n64,length/2); j++) {
+                    for(j=i; j<std::min(i+n64,length/2); j++) {
                         xml+=sprintf(xml,format,*(int64_t *)&data[2*j]);
                     }
                     xml+=sprintf(xml,"\n");
@@ -1220,7 +1221,7 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
                 }
                 for(i=0; i<length/2; i+=n64) {
                     indent();
-                    for(j=i; j<min(i+n64,length/2); j++) {
+                    for(j=i; j<std::min(i+n64,length/2); j++) {
                         xml+=sprintf(xml,format,*(uint64_t *)&data[2*j]);
                     }
                     xml+=sprintf(xml,"\n");
@@ -1241,7 +1242,7 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
                 }
                 for(i=0; i<length; i+=n32) {
                     indent();
-                    for(j=i; j<min((i+n32),length); j++) {
+                    for(j=i; j<std::min((i+n32),length); j++) {
                         xml+=sprintf(xml,format,data[j]);
                     }
                     xml+=sprintf(xml,"\n");
@@ -1299,7 +1300,7 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
 
                 for(i=0; i<length; i+=n32) {
                     indent();
-                    for(j=i; j<min(i+n32,length); j++) {
+                    for(j=i; j<std::min(i+n32,length); j++) {
                         xml+=sprintf(xml,format,(unsigned int)data[j]);
                     }
                     xml+=sprintf(xml,"\n");
@@ -1401,7 +1402,7 @@ static const char *get_matchname() {
         tagmatch=1;
         ntd=dict[i].ntag;
         if(ntd>0) {
-            nt=min(ntd,depth);
+            nt=std::min(ntd,depth);
             for(j=0; j<nt; j++) {
                 if(dict[i].tag[ntd-j-1]!=tagstack[depth-j-1]) {
                     tagmatch=0;
@@ -1413,7 +1414,7 @@ static const char *get_matchname() {
         nummatch=1;
         nnd=dict[i].nnum;
         if(nnd>0) {
-            nn=min(nnd,depth);
+            nn=std::min(nnd,depth);
             for(j=0; j<nn; j++) {
                 num=numstack[depth-j-1];
                 if((num>=0)&&(dict[i].num[nnd-j-1]!=num)) {
