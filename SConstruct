@@ -5,16 +5,22 @@ env.Append(CPPPATH = ['#src/libsrc','#src/libsrc++'])
 env.Append(CPPFLAGS = ['-fPIC'])
 env.Append(CXXFLAGS = ['-std=c++11'])
 
+import sys
+
 # Static libraries:
 libc   = env.Library('lib/evio',    scanFiles('src/libsrc',   accept=[ "*.c"]) )
 libcpp = env.Library('lib/evioxx',  scanFiles('src/libsrc++', accept=[ "*.cc"]))
 Depends(libcpp, libc)
 
 # Shared libraries:
-#env.SharedLibrary('lib/evio',    scanFiles('src/libsrc',   accept=[ "*.c"]) )
-#env.SharedLibrary('lib/evioxx',  scanFiles('src/libsrc++', accept=[ "*.cc"]))
+env.SharedLibrary('lib/evio',    scanFiles('src/libsrc',   accept=[ "*.c"]) )
+env.SharedLibrary('lib/evioxx',  scanFiles('src/libsrc++', accept=[ "*.cc"]))
 
 # Executables:
-xml = env.Program('bin/evio2xml', 'src/execsrc/evio2xml.c', LIBS=['z','xml2','evio'], LIBPATH=['lib'])
+xml = env.Program('bin/evio2xml', 'src/execsrc/evio2xml.c', LIBS=['z','evio','evioxx','expat'], LIBPATH=['lib'])
+cat = env.Program('bin/eviocat', 'src/execsrc/evioCat.cc', LIBS=['evio','evioxx','xml2','expat'], LIBPATH=['lib'])
+cop = env.Program('bin/eviocopy', 'src/execsrc/eviocopy.c', LIBS=['evio','evioxx','xml2','expat'], LIBPATH=['lib'])
 Depends(xml, libcpp)
+Depends(cat, libcpp)
+Depends(cop, libcpp)
 
