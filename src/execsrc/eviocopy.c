@@ -66,14 +66,14 @@ int main (int argc, char **argv) {
 
 
   /* open evio input file */
-  if((status=evOpen(input_filename,"r",&input_handle))!=0) {
+  if((status=evOpen(input_filename,(char*)"r",&input_handle))!=0) {
     printf("\n ?Unable to open input file %s, status=%d\n\n",input_filename,status);
     exit(EXIT_FAILURE);
   }
 
 
   /* open evio output file */
-  if((status=evOpen(output_filename,"w",&output_handle))!=0) {
+  if((status=evOpen(output_filename,(char*)"w",&output_handle))!=0) {
     printf("\n ?Unable to open output file %s, status=%d\n\n",output_filename,status);
     exit(EXIT_FAILURE);
   }
