@@ -5,8 +5,6 @@ env.Append(CPPPATH = ['#src/libsrc','#src/libsrc++'])
 env.Append(CPPFLAGS = ['-fPIC'])
 env.Append(CXXFLAGS = ['-std=c++17'])
 
-import sys
-
 # Static libraries:
 libc   = env.Library('lib/evio',    scanFiles('src/libsrc',   accept=[ "*.c"]) )
 libcpp = env.Library('lib/evioxx',  scanFiles('src/libsrc++', accept=[ "*.cc"]))
