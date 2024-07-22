@@ -3,5 +3,6 @@
 .scons*
 __pycache__
 lib
+bin
 *.o
 *.os
