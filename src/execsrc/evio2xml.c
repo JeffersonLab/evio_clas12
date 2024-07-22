@@ -49,7 +49,7 @@ enum {
 #include <expat.h>
 #include <algorithm>
 #include "evio.h"
-#include <zlib.h>
+#include "zlib.h"
 
 /*  misc variables from orig evio2xml.c */
 static char *filename;
@@ -193,11 +193,11 @@ void writeit(FILE *f, char *s, int len);
 int user_event_select(unsigned int *buf);
 int user_frag_select(int tag);
 
-#ifndef _MSC_VER
-FILE *gzopen(char*,char*);
-void gzclose(FILE*);
-void gzwrite(FILE*,char*,int);
-#endif
+//#ifndef _MSC_VER
+//FILE *gzopen(char*,char*);
+//void gzclose(FILE*);
+//void gzwrite(FILE*,char*,int);
+//#endif
 
 int set_event_tag(char *tag);
 int set_bank2_tag(char *tag);
@@ -307,7 +307,7 @@ int main (int argc, char **argv)
     writeit(out,s,strlen(s));
     evClose(handle);
 #ifndef _MSC_VER
-    if((out!=NULL)&&(gzip!=0))gzclose(out);
+    if((out!=NULL)&&(gzip!=0))gzclose((gzFile)out);
 #endif
     exit(EXIT_SUCCESS);
 }
@@ -324,7 +324,7 @@ void writeit(FILE *f, char *s, int len) {
         fprintf(f,s,len);
 #ifndef _MSC_VER
     } else {
-        gzwrite(f,s,len);
+        gzwrite((gzFile)f,s,len);
 #endif
     }
 
