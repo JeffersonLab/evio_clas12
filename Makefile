@@ -1,6 +1,6 @@
 
 default:
-	@scons
+	@scons -j8 
 
 clean:
 	find . -name '*.o' -delete
