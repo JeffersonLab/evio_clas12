@@ -49,7 +49,7 @@ enum {
 #include <expat.h>
 #include <algorithm>
 #include "evio.h"
-#include "zlib.h"
+#include <zlib.h>
 
 /*  misc variables from orig evio2xml.c */
 static char *filename;
@@ -146,7 +146,7 @@ static void increaseIndent() {
 
 /** Routine to decrease the xml indentation by 3 spaces down to 0. */
 static void decreaseIndent() {
-    int i, len = strlen(indentStr);
+    int len = strlen(indentStr);
     if (len < 3) return;
     indentStr[len-3] = '\0';
 }
@@ -235,10 +235,10 @@ int main (int argc, char **argv)
     char *xml = (char*)malloc(maxbuf*sizeof(unsigned int)*EVIO2XML);
 
     if((buf==NULL)||(xml==NULL)) {
-        int sz=maxbuf*sizeof(unsigned int);
+        //int sz=maxbuf*sizeof(unsigned int);
         printf("\n   *** Unable to allocate buffers ***\n\n");
-        printf("\n buf size=%d bytes, addr=0x%x     xml size=%d bytes, addr=0x%x\n\n",sz,buf,
-               sz*EVIO2XML,xml);
+        //printf("\n buf size=%d bytes, addr=0x%x     xml size=%d bytes, addr=0x%x\n\n",sz,buf,
+        //       sz*EVIO2XML,xml);
         exit(EXIT_FAILURE);
     }
 
@@ -469,7 +469,7 @@ void decode_command_line(int argc, char**argv) {
             i=i+1;
 
         } else if (strncasecmp(argv[i],"-ev",3)==0) {
-            if(nevok<(sizeof(evok)/sizeof(int))) {
+            if(nevok<(int)(sizeof(evok)/sizeof(int))) {
                 evok[nevok++]=atoi(argv[i+1]);
                 i=i+2;
             } else {
@@ -477,7 +477,7 @@ void decode_command_line(int argc, char**argv) {
             }
 
         } else if (strncasecmp(argv[i],"-noev",5)==0) {
-            if(nnoev<(sizeof(noev)/sizeof(int))) {
+            if(nnoev<(int)(sizeof(noev)/sizeof(int))) {
                 noev[nnoev++]=atoi(argv[i+1]);
                 i=i+2;
             } else {
@@ -485,7 +485,7 @@ void decode_command_line(int argc, char**argv) {
             }
 
         } else if (strncasecmp(argv[i],"-frag",5)==0) {
-            if(nfragok<(sizeof(fragok)/sizeof(int))) {
+            if(nfragok<(int)(sizeof(fragok)/sizeof(int))) {
                 fragok[nfragok++]=atoi(argv[i+1]);
                 i=i+2;
             } else {
@@ -493,7 +493,7 @@ void decode_command_line(int argc, char**argv) {
             }
 
         } else if (strncasecmp(argv[i],"-nofrag",7)==0) {
-            if(nnofrag<(sizeof(nofrag)/sizeof(int))) {
+            if(nnofrag<(int)(sizeof(nofrag)/sizeof(int))) {
                 nofrag[nnofrag++]=atoi(argv[i+1]);
                 i=i+2;
             } else {
@@ -619,7 +619,7 @@ static void startDictElement(void *userData, const char *name, const char **atts
     if(cp!=NULL) {
         nt=1;
         tagtext=strdup(cp);
-        for(i=0; i<strlen(tagtext); i++) if(tagtext[i]=='.')nt++;
+        for(i=0; i<(int)strlen(tagtext); i++) if(tagtext[i]=='.')nt++;
         ip=(int*)malloc(nt*sizeof(int));
 
         i=0;
@@ -638,7 +638,7 @@ static void startDictElement(void *userData, const char *name, const char **atts
     if(cp!=NULL) {
         nn=1;
         numtext=strdup(cp);
-        for(i=0; i<strlen(numtext); i++) if(numtext[i]=='.')nn++;
+        for(i=0; i<(int)strlen(numtext); i++) if(numtext[i]=='.')nn++;
         in=(int*)malloc(nn*sizeof(int));
 
         i=0;
@@ -707,7 +707,7 @@ void set_user_frag_select_func( int (*f) (int tag) ) {
  */
 static void dump_fragment(unsigned int *buf, int fragment_type) {
 
-    int i, length,type,is_a_container,noexpand, padding=0;
+    int length,type,is_a_container,noexpand, padding=0;
     unsigned short tag;
     unsigned char num;
 
@@ -752,7 +752,7 @@ static void dump_fragment(unsigned int *buf, int fragment_type) {
 
     /* update depth, tagstack, numstack, etc. */
     depth++;
-    if( (depth>(sizeof(tagstack)/sizeof(int))) || (depth>(sizeof(numstack)/sizeof(int))) ) {
+    if( (depth>(int)(sizeof(tagstack)/sizeof(int))) || (depth>(int)(sizeof(numstack)/sizeof(int))) ) {
         printf("?error...tagstack/numstack overflow\n");
         exit(EXIT_FAILURE);
     }
@@ -857,7 +857,7 @@ static void dump_fragment(unsigned int *buf, int fragment_type) {
  */
 static int dump_composite(unsigned int *buf) {
 
-    int i, length, type, is_a_container, noexpand, compLen=1;
+    int length, type, is_a_container, noexpand, compLen=1;
     unsigned short tag;
     unsigned char num;
 
