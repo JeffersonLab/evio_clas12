@@ -121,8 +121,8 @@ string evioException::toString(void) const throw() {
  * Returns char * listing exception object contents.
  * @return char * listing contents
  */
-//const char *evioException::what(void) const throw() {
-//  return(toString().c_str());
-//}
+const char *evioException::what(void) const throw() {
+  return(toString().c_str());
+}
 
 
