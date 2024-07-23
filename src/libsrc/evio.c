@@ -1056,7 +1056,7 @@ char *evStrReplaceEnvVar(const char *orig) {
   
             /* Create string to be replaced */
             memset(replace, 0, 256);
-            sprintf(replace, "%s%s%s", "$(", envVar, ")");
+            snprintf(replace, strlen(replace),"%s%s%s", "$(", envVar, ")");
 
             /* Do a straight substitution */
             tmp = evStrReplace(result, replace, env);
@@ -1156,11 +1156,11 @@ char *evStrFindSpecifiers(const char *orig, int *specifierCount) {
         if (digitCount < 1 || digits[0] != '0') {
             /* Recreate original specifier */
             memset(oldSpecifier, 0, 25);
-            sprintf(oldSpecifier, "%%%s", digits);
+            snprintf(oldSpecifier, strlen(newSpecifier), "%%%s", digits);
            
             /* Create replacement specifier */
             memset(newSpecifier, 0, 25);
-            sprintf(newSpecifier, "%%%c%s", '0', digits);
+            snprintf(newSpecifier, strlen(newSpecifier), "%%%c%s", '0', digits);
             if (debug) printf("         old specifier = %s, new specifier = %s\n",
                                oldSpecifier, newSpecifier);
        
@@ -1412,10 +1412,10 @@ char *evGenerateFileName(EVFILE *a, int specifierCount, int runNumber,
             specifier = (char *)calloc(1, strlen(a->baseFileName) + 6);
             if (!specifier) return(NULL); /* S_FAILURE */
             
-            sprintf(specifier, "%s.%s", a->baseFileName, "%d");
+            snprintf(specifier, strlen(specifier), "%s.%s", a->baseFileName, "%d");
 
             /* Create the filename */
-            sprintf(fileName, specifier, splitNumber);
+            snprintf(fileName, strlen(fileName), specifier, splitNumber);
             free(specifier);
         }
         
@@ -1431,10 +1431,10 @@ char *evGenerateFileName(EVFILE *a, int specifierCount, int runNumber,
             specifier = (char *)calloc(1, strlen(a->baseFileName) + 6);
             if (!specifier) return(NULL); /* S_FAILURE */
             
-            sprintf(specifier, "%s.%s", a->baseFileName, "%d");
+            snprintf(specifier, strlen(specifier), "%s.%s", a->baseFileName, "%d");
 
             /* Create the filename */
-            sprintf(fileName, specifier, runNumber, splitNumber);
+            snprintf(fileName, strlen(fileName), specifier, runNumber, splitNumber);
             free(specifier);
         }
         
@@ -1447,7 +1447,7 @@ char *evGenerateFileName(EVFILE *a, int specifierCount, int runNumber,
             /* Both printfing format specifiers are in a->filename already */
                         
             /* Create the filename */
-            sprintf(fileName, a->baseFileName, runNumber, splitNumber);
+            snprintf(fileName, strlen(fileName), a->baseFileName, runNumber, splitNumber);
         }
     }
     /* If we're not splitting files ... */
@@ -1461,13 +1461,13 @@ char *evGenerateFileName(EVFILE *a, int specifierCount, int runNumber,
             /* The printfing format specifier is in a->filename already */
                         
             /* Create the filename */
-            sprintf(fileName, a->baseFileName, runNumber);
+            snprintf(fileName, strlen(fileName), a->baseFileName, runNumber);
         }
         /* For 2 specifiers: insert run # and remove split # specifier */
         else if (specifierCount == 2) {
             fileName = (char *)calloc(1, strlen(a->baseFileName) + 11);
             if (!fileName) return(NULL); /* S_FAILURE */
-            sprintf(fileName, a->baseFileName, runNumber);
+            snprintf(fileName, strlen(fileName), a->baseFileName, runNumber);
 
             /* Get rid of remaining int specifiers */
             name = evStrRemoveSpecifiers(fileName);
@@ -4098,7 +4098,7 @@ static int evWriteImpl(int handle, const uint32_t *buffer, int useMutex)
 
     if (debug && a->splitting) {
 printf("evWrite: splitting, bytesToFile = %lu (bytes), event bytes = %u, bytesToBuf = %u, split = %lu\n",
-               a->bytesToFile, bytesToWrite, a->bytesToBuf, a->split);
+               (unsigned long)a->bytesToFile, bytesToWrite, a->bytesToBuf, (unsigned long)a->split);
     }
     
     /* If we have enough room in the current block and have not exceeded
@@ -4157,10 +4157,10 @@ if (debug) printf("evWrite: account for adding empty last block when splitting\n
 
 if (debug) printf("evWrite: splitting = %s: total size = %lu >? split = %lu\n",
                           (totalSize > a->split ? "True" : "False"),
-                          totalSize, a->split);
+                          (unsigned long)totalSize, (unsigned long)a->split);
 
 if (debug) printf("evWrite: total size components: bytesToFile = %lu, bytesToBuf = %u, ev bytes = %u, additional headers = %d * 32, dictlen = %u\n",
-        a->bytesToFile, a->bytesToBuf, bytesToWrite, headerCount, a->dictLength);
+        (unsigned long)a->bytesToFile, a->bytesToBuf, bytesToWrite, headerCount, a->dictLength);
 
         /* If we're going to split the file ... */
         if (totalSize > a->split) {
@@ -4368,7 +4368,7 @@ if (debug) {
         printf("         internal buffer cnt = %u\n", a->eventsToBuf);
         printf("         block cnt = %u\n", a->blkEvCount);
         printf("         bytes-to-buf  = %u\n", a->bytesToBuf);
-        printf("         bytes-to-file = %lu\n", a->bytesToFile);
+        printf("         bytes-to-file = %lu\n", (unsigned long)a->bytesToFile);
         printf("         block # = %u\n", a->blknum);
 }
 
@@ -5209,13 +5209,13 @@ printf("DEcreasing internal buffer size to %u words\n", bufferSize);
              * Must also be bigger than a single buffer? */
             if (splitSize < 4*18) {
 if (debug) printf("evIoctl: split file size is too small! (%lu bytes), must be min %u\n",
-                  splitSize, 4*18);
+                  (unsigned long)splitSize, 4*18);
                 handleWriteUnlock(handle);
                 return(S_EVFILE_BADSIZEREQ);
             }
             
             a->split = splitSize;
-if (debug) printf("evIoctl: split file at %lu (0x%lx) bytes\n", splitSize, splitSize);
+if (debug) printf("evIoctl: split file at %lu (0x%lx) bytes\n", (unsigned long)splitSize, (unsigned long)splitSize);
             break;
 
         /************************************************/
@@ -6170,59 +6170,59 @@ char *evPerror(int error) {
     switch((long)error) {
 
         case S_SUCCESS:
-            sprintf(temp, "S_SUCCESS:  action completed successfully\n");
+            snprintf(temp, strlen(temp), "S_SUCCESS:  action completed successfully\n");
             break;
 
         case S_FAILURE:
-            sprintf(temp, "S_FAILURE:  action failed\n");
+            snprintf(temp, strlen(temp), "S_FAILURE:  action failed\n");
             break;
 
         case S_EVFILE:
-            sprintf(temp, "S_EVFILE:  evfile.msg event file I/O\n");
+            snprintf(temp, strlen(temp), "S_EVFILE:  evfile.msg event file I/O\n");
             break;
 
         case S_EVFILE_TRUNC:
-            sprintf(temp, "S_EVFILE_TRUNC:  event truncated, insufficient buffer space\n");
+            snprintf(temp, strlen(temp), "S_EVFILE_TRUNC:  event truncated, insufficient buffer space\n");
             break;
 
         case S_EVFILE_BADBLOCK:
-            sprintf(temp, "S_EVFILE_BADBLOCK:  bad block (header) number\n");
+            snprintf(temp, strlen(temp), "S_EVFILE_BADBLOCK:  bad block (header) number\n");
             break;
 
         case S_EVFILE_BADHANDLE:
-            sprintf(temp, "S_EVFILE_BADHANDLE:  bad handle (closed?) or no memory to create new handle\n");
+            snprintf(temp, strlen(temp), "S_EVFILE_BADHANDLE:  bad handle (closed?) or no memory to create new handle\n");
             break;
 
         case S_EVFILE_BADFILE:
-            sprintf(temp, "S_EVFILE_BADFILE:  bad file format\n");
+            snprintf(temp, strlen(temp), "S_EVFILE_BADFILE:  bad file format\n");
             break;
 
         case S_EVFILE_BADARG:
-            sprintf(temp, "S_EVFILE_BADARG:  invalid function argument\n");
+            snprintf(temp, strlen(temp), "S_EVFILE_BADARG:  invalid function argument\n");
             break;
 
         case S_EVFILE_ALLOCFAIL:
-            sprintf(temp, "S_EVFILE_ALLOCFAIL:  failed to allocate memory\n");
+            snprintf(temp, strlen(temp), "S_EVFILE_ALLOCFAIL:  failed to allocate memory\n");
             break;
 
         case S_EVFILE_UNKOPTION:
-            sprintf(temp, "S_EVFILE_UNKOPTION:  unknown option specified\n");
+            snprintf(temp, strlen(temp), "S_EVFILE_UNKOPTION:  unknown option specified\n");
             break;
         
         case S_EVFILE_UNXPTDEOF:
-            sprintf(temp, "S_EVFILE_UNXPTDEOF:  unexpected end-of-file or end-of-valid_data while reading\n");
+            snprintf(temp, strlen(temp), "S_EVFILE_UNXPTDEOF:  unexpected end-of-file or end-of-valid_data while reading\n");
             break;
 
         case S_EVFILE_BADSIZEREQ:
-            sprintf(temp, "S_EVFILE_BADSIZEREQ:  invalid buffer size request to evIoct\n");
+            snprintf(temp, strlen(temp), "S_EVFILE_BADSIZEREQ:  invalid buffer size request to evIoct\n");
             break;
 
         case S_EVFILE_BADMODE:
-            sprintf(temp, "S_EVFILE_BADMODE:  invalid operation for current evOpen() mode\n");
+            snprintf(temp, strlen(temp), "S_EVFILE_BADMODE:  invalid operation for current evOpen() mode\n");
             break;
 
         default:
-            sprintf(temp, "?evPerror...no such error: %d\n",error);
+            snprintf(temp, strlen(temp), "?evPerror...no such error: %d\n",error);
             break;
     }
 
