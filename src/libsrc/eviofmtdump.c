@@ -40,7 +40,7 @@ static char *xml;
 static char indentStr[3*MAXDEPTH + 1];
 
 static void indent() {
-    xml += sprintf(xml, indentStr);
+    xml += snprintf(xml, strlen(xml), (char*)indentStr);
 }
 
 /** Routine to increase the xml indentation by 3 spaces up to the limit. */
@@ -140,7 +140,7 @@ int eviofmtdump(int *iarr, int nwrd, unsigned char *ifmt, int nfmt,
 #endif
 
     increaseAndIndent();
-    xml += sprintf(xml,"<row num=\"1\">");
+    xml += snprintf(xml,strlen(xml),"<row num=\"1\">");
     increaseIndent();
 
     while(b8 < b8end) {
@@ -154,8 +154,8 @@ int eviofmtdump(int *iarr, int nwrd, unsigned char *ifmt, int nfmt,
                 imt = 0/*iterm*/; /* Sergey: always start from the beginning of the format for now, will think about it ...*/
 
                 decreaseIndent();
-                xml += sprintf(xml,"\n%s</row>", indentStr);
-                xml += sprintf(xml,"\n%s<row num=\"%d\">", indentStr, rowNum++);
+                xml += snprintf(xml,strlen(xml),"\n%s</row>", indentStr);
+                xml += snprintf(xml,strlen(xml),"\n%s<row num=\"%d\">", indentStr, rowNum++);
                 increaseIndent();
             }
             /* meet right parenthesis, so we're finished processing format(s) in parenthesis */
@@ -172,9 +172,9 @@ int eviofmtdump(int *iarr, int nwrd, unsigned char *ifmt, int nfmt,
                     lev--; /* done with this level - decrease parenthesis level */
 
                     decreaseIndent();
-                    xml += sprintf(xml,"\n%s</paren>", indentStr);
+                    xml += snprintf(xml,strlen(xml),"\n%s</paren>", indentStr);
                     decreaseIndent();
-                    xml += sprintf(xml,"\n%s</repeat>", indentStr);
+                    xml += snprintf(xml,strlen(xml),"\n%s</repeat>", indentStr);
                     repeat--;
                 }
                 /* go for another round of processing by setting 'imt' to the left parenthesis */
@@ -183,8 +183,8 @@ int eviofmtdump(int *iarr, int nwrd, unsigned char *ifmt, int nfmt,
                     imt = lv[lev-1].left;
 
                     decreaseIndent();
-                    xml += sprintf(xml,"\n%s</paren>", indentStr);
-                    xml += sprintf(xml,"\n%s<paren>",  indentStr);
+                    xml += snprintf(xml,strlen(xml),"\n%s</paren>", indentStr);
+                    xml += snprintf(xml,strlen(xml),"\n%s<paren>",  indentStr);
                     increaseIndent();
                 }
             }
@@ -210,18 +210,18 @@ int eviofmtdump(int *iarr, int nwrd, unsigned char *ifmt, int nfmt,
                 if (kcnf == 0) {
 
                     indent();
-                    xml += sprintf(xml,"\n%s<repeat ", indentStr);
+                    xml += snprintf(xml,strlen(xml),"\n%s<repeat ", indentStr);
 
                     if (repeatFromN) {
-                        xml += sprintf(xml," n=\"%d\">", ncnf);
+                        xml += snprintf(xml,strlen(xml)," n=\"%d\">", ncnf);
                     }
                     else {
-                        xml += sprintf(xml," count=\"%d\">", ncnf);
+                        xml += snprintf(xml,strlen(xml)," count=\"%d\">", ncnf);
                     }
                     repeat++;
 
                     increaseIndent();
-                    xml += sprintf(xml,"\n%s<paren>",  indentStr);
+                    xml += snprintf(xml,strlen(xml),"\n%s<paren>",  indentStr);
 
                     if (ncnf == 0) { /*special case: if N=0, skip to the right paren */
                         iterm = imt-1;
@@ -230,9 +230,9 @@ int eviofmtdump(int *iarr, int nwrd, unsigned char *ifmt, int nfmt,
                             imt++;
                         }
 
-                        xml += sprintf(xml,"\n%s</paren>", indentStr);
+                        xml += snprintf(xml,strlen(xml),"\n%s</paren>", indentStr);
                         decreaseIndent();
-                        xml += sprintf(xml,"\n%s</repeat>", indentStr);
+                        xml += snprintf(xml,strlen(xml),"\n%s</repeat>", indentStr);
                         repeat--;
                         continue;
                     }
@@ -286,28 +286,28 @@ int eviofmtdump(int *iarr, int nwrd, unsigned char *ifmt, int nfmt,
             int oneLine = (ncnf <= itemsOnLine) ? 1 : 0;
 
             if (kcnf == 8) {
-                xml += sprintf(xml,"\n%s<float64 ", indentStr);
+                xml += snprintf(xml,strlen(xml),"\n%s<float64 ", indentStr);
             }
             else if (kcnf == 9) {
-                xml += sprintf(xml,"\n%s<int64 ", indentStr);
+                xml += snprintf(xml,strlen(xml),"\n%s<int64 ", indentStr);
             }
             else {
-                xml += sprintf(xml,"\n%s<uint64 ", indentStr);
+                xml += snprintf(xml,strlen(xml),"\n%s<uint64 ", indentStr);
             }
 
             if (repeatFromN) {
-                xml += sprintf(xml,"n=\"%d\">", ncnf);
+                xml += snprintf(xml,strlen(xml),"n=\"%d\">", ncnf);
             }
             else {
-                xml += sprintf(xml,"count=\"%d\">", ncnf);
+                xml += snprintf(xml,strlen(xml),"count=\"%d\">", ncnf);
             }
 
             if (!oneLine) {
                 increaseIndent();
-                xml += sprintf(xml,"\n");
+                xml += snprintf(xml,strlen(xml),"\n");
             }
             else {
-                xml += sprintf(xml," ");
+                xml += snprintf(xml,strlen(xml)," ");
             }
 
             b64 = (int64_t *)b8;
@@ -320,20 +320,20 @@ int eviofmtdump(int *iarr, int nwrd, unsigned char *ifmt, int nfmt,
                 }
 
                 if (kcnf == 8) {
-                    xml += sprintf(xml,"%#25.17g  ", *((double *)(b64)));
+                    xml += snprintf(xml,strlen(xml),"%#25.17g  ", *((double *)(b64)));
                 }
                 else if (hex) {
-                    xml += sprintf(xml,"0x%016llx  ", *b64);
+                    xml += snprintf(xml,strlen(xml),"0x%016llx  ", *b64);
                 }
                 else if (kcnf == 9) {
-                    xml += sprintf(xml,"%20lld  ", *b64);
+                    xml += snprintf(xml,strlen(xml),"%20lld  ", *b64);
                 }
                 else {
-                    xml += sprintf(xml,"%20llu  ", (uint64_t)(*b64));
+                    xml += snprintf(xml,strlen(xml),"%20llu  ", (uint64_t)(*b64));
                 }
 
                 if (!oneLine && count++ % itemsOnLine == 0) {
-                    xml += sprintf(xml,"\n");
+                    xml += snprintf(xml,strlen(xml),"\n");
                 }
 
                 b64++;
@@ -343,18 +343,18 @@ int eviofmtdump(int *iarr, int nwrd, unsigned char *ifmt, int nfmt,
             if (!oneLine) {
                 decreaseIndent();
                 if ((count - 1) % itemsOnLine != 0) {
-                    xml += sprintf(xml,"\n%s", indentStr);
+                    xml += snprintf(xml,strlen(xml),"\n%s", indentStr);
                 }
             }
 
             if (kcnf == 8) {
-                xml += sprintf(xml,"</float64>");
+                xml += snprintf(xml,strlen(xml),"</float64>");
             }
             else if (kcnf == 9) {
-                xml += sprintf(xml,"</int64>");
+                xml += snprintf(xml,strlen(xml),"</int64>");
             }
             else {
-                xml += sprintf(xml,"</uint64>");
+                xml += snprintf(xml,strlen(xml),"</uint64>");
             }
         }
 
@@ -365,31 +365,31 @@ int eviofmtdump(int *iarr, int nwrd, unsigned char *ifmt, int nfmt,
             int oneLine = (ncnf <= itemsOnLine) ? 1 : 0;
 
             if (kcnf == 2) {
-                xml += sprintf(xml,"\n%s<float32 ", indentStr);
+                xml += snprintf(xml,strlen(xml),"\n%s<float32 ", indentStr);
             }
             else if (kcnf == 1) {
-                xml += sprintf(xml,"\n%s<uint32 ", indentStr);
+                xml += snprintf(xml,strlen(xml),"\n%s<uint32 ", indentStr);
             }
             else if (kcnf == 11) {
-                xml += sprintf(xml,"\n%s<int32 ", indentStr);
+                xml += snprintf(xml,strlen(xml),"\n%s<int32 ", indentStr);
             }
             else {
-                xml += sprintf(xml,"\n%s<Hollerit ", indentStr);
+                xml += snprintf(xml,strlen(xml),"\n%s<Hollerit ", indentStr);
             }
 
             if (repeatFromN) {
-                xml += sprintf(xml,"n=\"%d\">", ncnf);
+                xml += snprintf(xml,strlen(xml),"n=\"%d\">", ncnf);
             }
             else {
-                xml += sprintf(xml,"count=\"%d\">", ncnf);
+                xml += snprintf(xml,strlen(xml),"count=\"%d\">", ncnf);
             }
 
             if (!oneLine) {
                 increaseIndent();
-                xml += sprintf(xml,"\n");
+                xml += snprintf(xml,strlen(xml),"\n");
             }
             else {
-                xml += sprintf(xml," ");
+                xml += snprintf(xml,strlen(xml)," ");
             }
 
             b32 = (int32_t *)b8;
@@ -402,20 +402,20 @@ int eviofmtdump(int *iarr, int nwrd, unsigned char *ifmt, int nfmt,
                 }
 
                 if (kcnf == 2) {
-                    xml += sprintf(xml,"%#15.8g  ", *((float *)(b32)));
+                    xml += snprintf(xml,strlen(xml),"%#15.8g  ", *((float *)(b32)));
                 }
                 else if (hex) {
-                    xml += sprintf(xml,"0x%08x  ", *b32);
+                    xml += snprintf(xml,strlen(xml),"0x%08x  ", *b32);
                 }
                 else if (kcnf == 1) {
-                    xml += sprintf(xml,"%11u  ", (uint32_t)(*b32));
+                    xml += snprintf(xml,strlen(xml),"%11u  ", (uint32_t)(*b32));
                 }
                 else {
-                    xml += sprintf(xml,"%11d  ", *b32);
+                    xml += snprintf(xml,strlen(xml),"%11d  ", *b32);
                 }
 
                 if (!oneLine && count++ % itemsOnLine == 0) {
-                    xml += sprintf(xml,"\n");
+                    xml += snprintf(xml,strlen(xml),"\n");
                 }
 
                 b32++;
@@ -426,21 +426,21 @@ int eviofmtdump(int *iarr, int nwrd, unsigned char *ifmt, int nfmt,
             if (!oneLine) {
                 decreaseIndent();
                 if ((count - 1) % itemsOnLine != 0) {
-                    xml += sprintf(xml,"\n%s", indentStr);
+                    xml += snprintf(xml,strlen(xml),"\n%s", indentStr);
                 }
             }
 
             if (kcnf == 2) {
-                xml += sprintf(xml,"</float32>");
+                xml += snprintf(xml,strlen(xml),"</float32>");
             }
             else if (kcnf == 1) {
-                xml += sprintf(xml,"</uint32>");
+                xml += snprintf(xml,strlen(xml),"</uint32>");
             }
             else if (kcnf == 11) {
-                xml += sprintf(xml,"</int32>");
+                xml += snprintf(xml,strlen(xml),"</int32>");
             }
             else {
-                xml += sprintf(xml,"</Hollerit>");
+                xml += snprintf(xml,strlen(xml),"</Hollerit>");
             }
         }
 
@@ -451,25 +451,25 @@ int eviofmtdump(int *iarr, int nwrd, unsigned char *ifmt, int nfmt,
             int oneLine = (ncnf <= itemsOnLine) ? 1 : 0;
 
             if (kcnf == 4) {
-                xml += sprintf(xml,"\n%s<int16 ", indentStr);
+                xml += snprintf(xml,strlen(xml),"\n%s<int16 ", indentStr);
             }
             else {
-                xml += sprintf(xml,"\n%s<uint16 ", indentStr);
+                xml += snprintf(xml,strlen(xml),"\n%s<uint16 ", indentStr);
             }
 
             if (repeatFromN) {
-                xml += sprintf(xml,"n=\"%d\">", ncnf);
+                xml += snprintf(xml,strlen(xml),"n=\"%d\">", ncnf);
             }
             else {
-                xml += sprintf(xml,"count=\"%d\">", ncnf);
+                xml += snprintf(xml,strlen(xml),"count=\"%d\">", ncnf);
             }
 
             if (!oneLine) {
                 increaseIndent();
-                xml += sprintf(xml,"\n");
+                xml += snprintf(xml,strlen(xml),"\n");
             }
             else {
-                xml += sprintf(xml," ");
+                xml += snprintf(xml,strlen(xml)," ");
             }
 
             b16 = (int16_t *)b8;
@@ -482,17 +482,17 @@ int eviofmtdump(int *iarr, int nwrd, unsigned char *ifmt, int nfmt,
                 }
 
                 if (hex) {
-                    xml += sprintf(xml,"0x%04hx  ", *b16);
+                    xml += snprintf(xml,strlen(xml),"0x%04hx  ", *b16);
                 }
                 else if (kcnf == 4)  {
-                    xml += sprintf(xml,"%6hd  ", *b16);
+                    xml += snprintf(xml,strlen(xml),"%6hd  ", *b16);
                 }
                 else {
-                    xml += sprintf(xml,"%6hu  ", *b16);
+                    xml += snprintf(xml,strlen(xml),"%6hu  ", *b16);
                 }
 
                 if (!oneLine && count++ % itemsOnLine == 0) {
-                    xml += sprintf(xml,"\n");
+                    xml += snprintf(xml,strlen(xml),"\n");
                 }
 
                 b16++;
@@ -503,15 +503,15 @@ int eviofmtdump(int *iarr, int nwrd, unsigned char *ifmt, int nfmt,
             if (!oneLine) {
                 decreaseIndent();
                 if ((count - 1) % itemsOnLine != 0) {
-                    xml += sprintf(xml,"\n%s", indentStr);
+                    xml += snprintf(xml,strlen(xml),"\n%s", indentStr);
                 }
             }
 
             if (kcnf == 4) {
-                xml += sprintf(xml,"</int16>");
+                xml += snprintf(xml,strlen(xml),"</int16>");
             }
             else {
-                xml += sprintf(xml,"</uint16>");
+                xml += snprintf(xml,strlen(xml),"</uint16>");
             }
         }
 
@@ -521,27 +521,27 @@ int eviofmtdump(int *iarr, int nwrd, unsigned char *ifmt, int nfmt,
             if (kcnf == 3) {
                 char **strArray = NULL;
 
-                xml += sprintf(xml,"\n%s<string ", indentStr);
+                xml += snprintf(xml,strlen(xml),"\n%s<string ", indentStr);
 
                 if (repeatFromN) {
-                    xml += sprintf(xml,"n=\"%d\">", ncnf);
+                    xml += snprintf(xml,strlen(xml),"n=\"%d\">", ncnf);
                 }
                 else {
-                    xml += sprintf(xml,"count=\"%d\">", ncnf);
+                    xml += snprintf(xml,strlen(xml),"count=\"%d\">", ncnf);
                 }
 
                 increaseIndent();
-                xml += sprintf(xml,"\n");
+                xml += snprintf(xml,strlen(xml),"\n");
 
                 err = evBufToStrings((char *)b8, ncnf, &strArray, &len);
                 for (i=0; i < len; i++) {
-                    xml += sprintf(xml,"%s<![CDATA[%s]]>\n", indentStr, strArray[i]);
+                    xml += snprintf(xml,strlen(xml),"%s<![CDATA[%s]]>\n", indentStr, strArray[i]);
                     free(strArray[i]);
                 }
                 free(strArray);
 
                 decreaseIndent();
-                xml += sprintf(xml,"%s</string>", indentStr);
+                xml += snprintf(xml,strlen(xml),"%s</string>", indentStr);
                 b8 += ncnf;
             }
             /* char & unsigned char ints */
@@ -550,25 +550,25 @@ int eviofmtdump(int *iarr, int nwrd, unsigned char *ifmt, int nfmt,
                 int oneLine = (ncnf <= itemsOnLine) ? 1 : 0;
 
                 if (kcnf == 6) {
-                    xml += sprintf(xml,"\n%s<int8 ", indentStr);
+                    xml += snprintf(xml,strlen(xml),"\n%s<int8 ", indentStr);
                 }
                 else {
-                    xml += sprintf(xml,"\n%s<uint8 ", indentStr);
+                    xml += snprintf(xml,strlen(xml),"\n%s<uint8 ", indentStr);
                 }
 
                 if (repeatFromN) {
-                    xml += sprintf(xml,"n=\"%d\">", ncnf);
+                    xml += snprintf(xml,strlen(xml),"n=\"%d\">", ncnf);
                 }
                 else {
-                    xml += sprintf(xml,"count=\"%d\">", ncnf);
+                    xml += snprintf(xml,strlen(xml),"count=\"%d\">", ncnf);
                 }
 
                 if (!oneLine) {
                     increaseIndent();
-                    xml += sprintf(xml,"\n");
+                    xml += snprintf(xml,strlen(xml),"\n");
                 }
                 else {
-                    xml += sprintf(xml," ");
+                    xml += snprintf(xml,strlen(xml)," ");
                 }
 
                 for (i=0; i < ncnf; i++) {
@@ -577,17 +577,17 @@ int eviofmtdump(int *iarr, int nwrd, unsigned char *ifmt, int nfmt,
                     }
 
                     if (hex) {
-                        xml += sprintf(xml,"0x%02hhx  ", b8[i]);
+                        xml += snprintf(xml,strlen(xml),"0x%02hhx  ", b8[i]);
                     }
                     else if (kcnf == 6)  {
-                        xml += sprintf(xml,"%4d  ", b8[i]);
+                        xml += snprintf(xml,strlen(xml),"%4d  ", b8[i]);
                     }
                     else {
-                        xml += sprintf(xml,"%4u  ", ((unsigned char *)b8)[i]);
+                        xml += snprintf(xml,strlen(xml),"%4u  ", ((unsigned char *)b8)[i]);
                     }
 
                     if (!oneLine && count++ % itemsOnLine == 0) {
-                        xml += sprintf(xml,"\n");
+                        xml += snprintf(xml,strlen(xml),"\n");
                     }
                 }
 
@@ -596,15 +596,15 @@ int eviofmtdump(int *iarr, int nwrd, unsigned char *ifmt, int nfmt,
                 if (!oneLine) {
                     decreaseIndent();
                     if ((count - 1) % itemsOnLine != 0) {
-                        xml += sprintf(xml,"\n%s", indentStr);
+                        xml += snprintf(xml,strlen(xml),"\n%s", indentStr);
                     }
                 }
 
                 if (kcnf == 6) {
-                    xml += sprintf(xml,"</int8>");
+                    xml += snprintf(xml,strlen(xml),"</int8>");
                 }
                 else {
-                    xml += sprintf(xml,"</uint8>");
+                    xml += snprintf(xml,strlen(xml),"</uint8>");
                 }
             }
         }
@@ -612,13 +612,13 @@ int eviofmtdump(int *iarr, int nwrd, unsigned char *ifmt, int nfmt,
 
     if (repeat > 0) {
         decreaseIndent();
-        xml += sprintf(xml,"\n%s</paren>", indentStr);
+        xml += snprintf(xml,strlen(xml),"\n%s</paren>", indentStr);
         decreaseIndent();
-        xml += sprintf(xml,"\n%s</repeat>", indentStr);
+        xml += snprintf(xml,strlen(xml),"\n%s</repeat>", indentStr);
     }
 
     decreaseIndent();
-    xml += sprintf(xml,"\n%s</row>\n", indentStr);
+    xml += snprintf(xml,strlen(xml),"\n%s</row>\n", indentStr);
 
 #ifdef DEBUG
   printf("\n======== eviofmtdump finish (xml1=0x%08p, xml=0x%08p, len=%d) ==========\n",xml1,xml,(int)(xml-xml1));
