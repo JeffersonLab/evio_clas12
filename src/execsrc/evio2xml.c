@@ -126,7 +126,7 @@ static char *xml;
 static char indentStr[3*MAXDEPTH + 1];
 
 static void indent() {
-    xml += sprintf(xml, indentStr);
+    xml += snprintf(xml, strlen(xml), indentStr);
 }
 
 static int getIndent() {
@@ -269,9 +269,9 @@ int main (int argc, char **argv)
     /* init xmldump */
     set_user_frag_select_func(user_frag_select);
     evio_xmldump_init(dictfilename,dicttagname);
-    sprintf(s,"<?xml version=\"1.0\"?>\n");
+    snprintf(s,strlen(s),"<?xml version=\"1.0\"?>\n");
     writeit(out,s,strlen(s));
-    sprintf(s,"<%s>\n",main_tag);
+    snprintf(s,strlen(s),"<%s>\n",main_tag);
     writeit(out,s,strlen(s));
 
     increaseIndent();
@@ -303,7 +303,7 @@ int main (int argc, char **argv)
     evio_xmldump_done(xml,maxbuf*sizeof(unsigned int)*EVIO2XML);
     writeit(out,xml,strlen(xml));
 
-    sprintf(s,"</%s>\n\n",main_tag);
+    snprintf(s,strlen(s),"</%s>\n\n",main_tag);
     writeit(out,s,strlen(s));
     evClose(handle);
 #ifndef _MSC_VER
@@ -677,7 +677,7 @@ void evio_xmldump(unsigned int *buf, int bufnum, char *string, int len) {
 
     indent();
 
-    xml+=sprintf(xml,"<!-- ===================== Buffer %d contains %d words (%d bytes) "
+    xml+=snprintf(xml,strlen(xml),"<!-- ===================== Buffer %d contains %d words (%d bytes) "
             "===================== -->\n",nbuf,buf[0]+1,4*(buf[0]+1));
 
     depth=0;
@@ -769,11 +769,11 @@ static void dump_fragment(unsigned int *buf, int fragment_type) {
 
     /* verbose header */
     if(verbose!=0) {
-        xml+=sprintf(xml,"\n"); indent();
+        xml+=snprintf(xml,strlen(xml),"\n"); indent();
         if(fragment_type==BANK) {
-            xml+=sprintf(xml,"<!-- header words: %d, %#x -->\n",buf[0],buf[1]);
+            xml+=snprintf(xml,strlen(xml),"<!-- header words: %d, %#x -->\n",buf[0],buf[1]);
         } else {
-            xml+=sprintf(xml,"<!-- header word: %#x -->\n",buf[0]);
+            xml+=snprintf(xml,strlen(xml),"<!-- header word: %#x -->\n",buf[0]);
         }
     }
 
@@ -782,37 +782,37 @@ static void dump_fragment(unsigned int *buf, int fragment_type) {
 
     /* format and content */
     if((fragment_type==BANK)&&(depth==1)) {
-        xml+=sprintf(xml,"<%s format=\"evio\" count=\"%d\"",event_tag,nbuf);
-        if(brief==0)xml+=sprintf(xml," content=\"%s\"",evGetTypename(type));
+        xml+=snprintf(xml,strlen(xml),"<%s format=\"evio\" count=\"%d\"",event_tag,nbuf);
+        if(brief==0)xml+=snprintf(xml,strlen(xml)," content=\"%s\"",evGetTypename(type));
     } else if(myname!=NULL) {
-        xml+=sprintf(xml,"<%s",myname);
-        if(brief==0)xml+=sprintf(xml," content=\"%s\"",evGetTypename(type));
+        xml+=snprintf(xml,strlen(xml),"<%s",myname);
+        if(brief==0)xml+=snprintf(xml,strlen(xml)," content=\"%s\"",evGetTypename(type));
     } else if((fragment_type==BANK)&&(depth==2)) {
-        xml+=sprintf(xml,"<%s",bank2_tag);
-        if(brief==0)xml+=sprintf(xml," content=\"%s\"",evGetTypename(type));
+        xml+=snprintf(xml,strlen(xml),"<%s",bank2_tag);
+        if(brief==0)xml+=snprintf(xml,strlen(xml)," content=\"%s\"",evGetTypename(type));
     } else if(is_a_container||no_typename) {
-        xml+=sprintf(xml,"<%s",fragment_name[fragment_type]);
-        if(brief==0)xml+=sprintf(xml," content=\"%s\"",evGetTypename(type));
+        xml+=snprintf(xml,strlen(xml),"<%s",fragment_name[fragment_type]);
+        if(brief==0)xml+=snprintf(xml,strlen(xml)," content=\"%s\"",evGetTypename(type));
     } else {
-        xml+=sprintf(xml,"<%s",evGetTypename(type));
+        xml+=snprintf(xml,strlen(xml),"<%s",evGetTypename(type));
     }
 
     /* data_type, tag, and num */
-    if(brief==0)xml+=sprintf(xml," data_type=\"0x%x\"",type);
-    if(brief==0)xml+=sprintf(xml," tag=\"%d\"",tag);
-    if(brief==0)xml+=sprintf(xml," padding=\"%d\"",padding);
-    if((brief==0)&&(fragment_type==BANK))xml+=sprintf(xml," num=\"%d\"",(int)num);
+    if(brief==0)xml+=snprintf(xml,strlen(xml)," data_type=\"0x%x\"",type);
+    if(brief==0)xml+=snprintf(xml,strlen(xml)," tag=\"%d\"",tag);
+    if(brief==0)xml+=snprintf(xml,strlen(xml)," padding=\"%d\"",padding);
+    if((brief==0)&&(fragment_type==BANK))xml+=snprintf(xml,strlen(xml)," num=\"%d\"",(int)num);
 
     /* length, ndata for verbose */
     /*sergey if(verbose!=0) replaced by*/if(brief==0) {
-        xml+=sprintf(xml," length=\"%d\" ndata=\"%d\"", (length-1),
+        xml+=snprintf(xml,strlen(xml)," length=\"%d\" ndata=\"%d\"", (length-1),
                      get_ndata(type, (length - fragment_offset[fragment_type]), padding));
     }
 
 
     /* noexpand option */
-    if(noexpand)xml+=sprintf(xml," opt=\"noexpand\"");
-    xml+=sprintf(xml,">\n");
+    if(noexpand)xml+=snprintf(xml,strlen(xml)," opt=\"noexpand\"");
+    xml+=snprintf(xml,strlen(xml),">\n");
 
 
     /* fragment data */
@@ -823,17 +823,17 @@ static void dump_fragment(unsigned int *buf, int fragment_type) {
     /* xml closing fragment */
     indent();
     if((fragment_type==BANK)&&(depth==1)) {
-        xml+=sprintf(xml,"</%s>\n\n",event_tag);
+        xml+=snprintf(xml,strlen(xml), "</%s>\n\n",event_tag);
         indent();
-        xml+=sprintf(xml,"<!-- end buffer %d -->\n\n",nbuf);
+        xml+=snprintf(xml,strlen(xml), "<!-- end buffer %d -->\n\n",nbuf);
     } else if(myname!=NULL) {
-        xml+=sprintf(xml,"</%s>\n",myname);
+        xml+=snprintf(xml,strlen(xml), "</%s>\n",myname);
     } else if((fragment_type==BANK)&&(depth==2)) {
-        xml+=sprintf(xml,"</%s>\n",bank2_tag);
+        xml+=snprintf(xml,strlen(xml), "</%s>\n",bank2_tag);
     } else if(is_a_container||no_typename) {
-        xml+=sprintf(xml,"</%s>\n",fragment_name[fragment_type]);
+        xml+=snprintf(xml,strlen(xml), "</%s>\n",fragment_name[fragment_type]);
     } else {
-        xml+=sprintf(xml,"</%s>\n",evGetTypename(type));
+        xml+=snprintf(xml,strlen(xml), "</%s>\n",evGetTypename(type));
     }
 
     decreaseIndent();
@@ -888,45 +888,45 @@ static int dump_composite(unsigned int *buf) {
 
     /* verbose header */
     if(verbose!=0) {
-        xml += sprintf(xml,"\n");
+        xml += snprintf(xml,strlen(xml), "\n");
         indent();
-        xml += sprintf(xml, "<!-- header word: %#x -->\n",buf[0]);
+        xml += snprintf(xml, strlen(xml), "<!-- header word: %#x -->\n",buf[0]);
     }
 
 
     /* signify start of array element */
     indent();
-    xml += sprintf(xml, "<comp>\n");
+    xml += snprintf(xml, strlen(xml), "<comp>\n");
 
 
     /* format and content */
     increaseAndIndent();
-    xml += sprintf(xml, "<format ");
+    xml += snprintf(xml, strlen(xml), "<format ");
 
 
     /* data_type, tag, and num */
-    if (brief==0) xml += sprintf(xml," data_type=\"0x%x\"",type);
-    if (brief==0) xml += sprintf(xml," tag=\"%d\"",tag);
+    if (brief==0) xml += snprintf(xml,strlen(xml), " data_type=\"0x%x\"",type);
+    if (brief==0) xml += snprintf(xml,strlen(xml), " tag=\"%d\"",tag);
 
 
     /* length, ndata */
-    xml += sprintf(xml, " length=\"%d\" ndata=\"%d\"", (length-1), get_ndata(type,length-1,0));
+    xml += snprintf(xml, strlen(xml), " length=\"%d\" ndata=\"%d\"", (length-1), get_ndata(type,length-1,0));
 
     /* noexpand option */
-    if (noexpand) xml += sprintf(xml," opt=\"noexpand\"");
-    xml += sprintf(xml, ">\n");
+    if (noexpand) xml += snprintf(xml,strlen(xml), " opt=\"noexpand\"");
+    xml += snprintf(xml, strlen(xml), ">\n");
 
 
     /* dump format string. Just one string, ends on null so simple */
     /* tag contains the number of characters in format string - Sergey */
     /*TODO: This was never mentioned to me - Carl */
     increaseAndIndent();
-    xml += sprintf(xml,"%s\n", (char*)&buf[1]);
+    xml += snprintf(xml,strlen(xml), "%s\n", (char*)&buf[1]);
 
 
     /* xml closing fragment */
     decreaseAndIndent();
-    xml += sprintf(xml,"</format>\n");
+    xml += snprintf(xml,strlen(xml), "</format>\n");
 
 
     /* decrement stack depth */
@@ -961,13 +961,13 @@ static int dump_composite(unsigned int *buf) {
 /*printf("length = %d words, padding = %d extra bytes\n",length, padding);*/
 
     indent();
-    xml += sprintf(xml,"<data  tag=\"%d\" num=\"%d\">\n",tag, num);
+    xml += snprintf(xml,strlen(xml),"<data  tag=\"%d\" num=\"%d\">\n",tag, num);
     xml += eviofmtdump((int *)&buf[index], length, ifmt, nfmt, padding, getIndent(), !xtod, xml);
     indent();
-    xml += sprintf(xml,"</data>\n");
+    xml += snprintf(xml,strlen(xml),"</data>\n");
 
     decreaseAndIndent();
-    xml+=sprintf(xml,"</comp>\n");
+    xml+=snprintf(xml,strlen(xml),"</comp>\n");
 
     return compLen;
 }
@@ -995,18 +995,18 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
     /* dump data if no expansion, even if this is a container */
     if (noexpand) {
         if (xtod) {
-            sprintf(format,"%%11d  ");
+            snprintf(format,strlen(format),"%%11d  ");
         }
         else {
-            sprintf(format,"0x%%08x  ");
+            snprintf(format,strlen(format),"0x%%08x  ");
         }
 
         for(i=0; i<length; i+=n32) {
             indent();
             for(j=i; j<std::min((i+n32),length); j++) {
-                xml+=sprintf(xml,format,data[j]);
+                xml+=snprintf(xml,strlen(xml),format,data[j]);
             }
-            xml+=sprintf(xml,"\n");
+            xml+=snprintf(xml,strlen(xml),"\n");
         }
         return;
     }
@@ -1023,17 +1023,17 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
             if(!no_data) {
                 increaseIndent();
                 if (xtod) {
-                    sprintf(format,"%%11u  ");
+                    snprintf(format,strlen(format),"%%11u  ");
                 }
                 else {
-                    sprintf(format,"0x%%08x  ");
+                    snprintf(format,strlen(format),"0x%%08x  ");
                 }
                 for(i=0; i<length; i+=n32) {
                     indent();
                     for(j=i; j<std::min((i+n32),length); j++) {
-                        xml+=sprintf(xml,format,data[j]);
+                        xml+=snprintf(xml,strlen(xml),format,data[j]);
                     }
-                    xml+=sprintf(xml,"\n");
+                    xml+=snprintf(xml,strlen(xml),"\n");
                 }
                 decreaseIndent();
             }
@@ -1043,13 +1043,13 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
         case 0x2:
             if(!no_data) {
                 increaseIndent();
-                sprintf(format,"%%#15.8g  ");
+                snprintf(format,strlen(format),"%%#15.8g  ");
                 for(i=0; i<length; i+=n32) {
                     indent();
                     for(j=i; j<std::min(i+n32,length); j++) {
-                        xml+=sprintf(xml,format,*(float*)&data[j]);
+                        xml+=snprintf(xml,strlen(xml),format,*(float*)&data[j]);
                     }
-                    xml+=sprintf(xml,"\n");
+                    xml+=snprintf(xml,strlen(xml),"\n");
                 }
                 decreaseIndent();
             }
@@ -1064,8 +1064,8 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
                 while((c[0]!=0x4)&&((c-start)<length*4)) {
                     len=strlen(c);
                     indent();
-                    sprintf(format,"<![CDATA[%%.%ds]]>\n",len);
-                    xml+=sprintf(xml,format,c);
+                    snprintf(format,strlen(format),"<![CDATA[%%.%ds]]>\n",len);
+                    xml+=snprintf(xml,strlen(xml),format,c);
                     c+=len+1;
                 }
                 decreaseIndent();
@@ -1080,18 +1080,18 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
                 if (padding == 2) numShorts--;
 
                 if (xtod) {
-                    sprintf(format,"%%6hd  ");
+                    snprintf(format,strlen(format),"%%6hd  ");
                 }
                 else {
-                    sprintf(format,"0x%%04hx  ");
+                    snprintf(format,strlen(format),"0x%%04hx  ");
                 }
                 s=(short*)&data[0];
                 for(i=0; i<numShorts; i+=n16) {
                     indent();
                     for(j=i; j<std::min(i+n16,numShorts); j++) {
-                        xml+=sprintf(xml,format,s[j]);
+                        xml+=snprintf(xml,strlen(xml),format,s[j]);
                     }
-                    xml+=sprintf(xml,"\n");
+                    xml+=snprintf(xml,strlen(xml),"\n");
                 }
                 decreaseIndent();
             }
@@ -1105,18 +1105,18 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
                 if (padding == 2) numShorts--;
 
                 if (xtod) {
-                    sprintf(format,"%%6hu  ");
+                    snprintf(format,strlen(format),"%%6hu  ");
                 }
                 else {
-                    sprintf(format,"0x%%04hx  ");
+                    snprintf(format,strlen(format),"0x%%04hx  ");
                 }
                 s=(short*)&data[0];
                 for(i=0; i<numShorts; i+=n16) {
                     indent();
                     for(j=i; j<std::min(i+n16,numShorts); j++) {
-                        xml+=sprintf(xml,format,s[j]);
+                        xml+=snprintf(xml,strlen(xml),format,s[j]);
                     }
-                    xml+=sprintf(xml,"\n");
+                    xml+=snprintf(xml,strlen(xml),"\n");
                 }
                 decreaseIndent();
             }
@@ -1130,18 +1130,18 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
                 if (padding >=1 && padding <= 3) numBytes -= padding;
 
                 if (xtod) {
-                    sprintf(format,"%%4d  ");
+                    snprintf(format,strlen(format),"%%4d  ");
                 }
                 else {
-                    sprintf(format,"0x%%02hhx  ");
+                    snprintf(format,strlen(format),"0x%%02hhx  ");
                 }
                 c=(char*)&data[0];
                 for(i=0; i<numBytes; i+=n8) {
                     indent();
                     for(j=i; j<std::min(i+n8,numBytes); j++) {
-                        xml+=sprintf(xml,format,c[j]);
+                        xml+=snprintf(xml,strlen(xml),format,c[j]);
                     }
-                    xml+=sprintf(xml,"\n");
+                    xml+=snprintf(xml,strlen(xml),"\n");
                 }
                 decreaseIndent();
             }
@@ -1155,18 +1155,18 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
                 if (padding >=1 && padding <= 3) numBytes -= padding;
 
                 if (xtod) {
-                    sprintf(format,"%%4u  ");
+                    snprintf(format,strlen(format),"%%4u  ");
                 }
                 else {
-                    sprintf(format,"0x%%02hhx  ");
+                    snprintf(format,strlen(format),"0x%%02hhx  ");
                 }
                 uc=(unsigned char*)&data[0];
                 for(i=0; i<numBytes; i+=n8) {
                     indent();
                     for(j=i; j<std::min(i+n8,numBytes); j++) {
-                        xml+=sprintf(xml,format,uc[j]);
+                        xml+=snprintf(xml,strlen(xml),format,uc[j]);
                     }
-                    xml+=sprintf(xml,"\n");
+                    xml+=snprintf(xml,strlen(xml),"\n");
                 }
                 decreaseIndent();
             }
@@ -1176,13 +1176,13 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
         case 0x8:
             if(!no_data) {
                 increaseIndent();
-                sprintf(format,"%%#25.17g  ");
+                snprintf(format,strlen(format),"%%#25.17g  ");
                 for(i=0; i<length/2; i+=n64) {
                     indent();
                     for(j=i; j<std::min(i+n64,length/2); j++) {
-                        xml+=sprintf(xml,format,*(double*)&data[2*j]);
+                        xml+=snprintf(xml,strlen(xml),format,*(double*)&data[2*j]);
                     }
-                    xml+=sprintf(xml,"\n");
+                    xml+=snprintf(xml,strlen(xml),"\n");
                 }
                 decreaseIndent();
             }
@@ -1193,17 +1193,17 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
             if(!no_data) {
                 increaseIndent();
                 if (xtod) {
-                    sprintf(format,"%%20lld  ");
+                    snprintf(format,strlen(format),"%%20lld  ");
                 }
                 else {
-                    sprintf(format,"0x%%016llx  ");
+                    snprintf(format,strlen(format),"0x%%016llx  ");
                 }
                 for(i=0; i<length/2; i+=n64) {
                     indent();
                     for(j=i; j<std::min(i+n64,length/2); j++) {
-                        xml+=sprintf(xml,format,*(int64_t *)&data[2*j]);
+                        xml+=snprintf(xml,strlen(xml),format,*(int64_t *)&data[2*j]);
                     }
-                    xml+=sprintf(xml,"\n");
+                    xml+=snprintf(xml,strlen(xml),"\n");
                 }
                 decreaseIndent();
             }
@@ -1214,17 +1214,17 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
             if(!no_data) {
                 increaseIndent();
                 if (xtod) {
-                    sprintf(format,"%%20llu  ");
+                    snprintf(format,strlen(format),"%%20llu  ");
                 }
                 else {
-                    sprintf(format,"0x%%016llx  ");
+                    snprintf(format,strlen(format),"0x%%016llx  ");
                 }
                 for(i=0; i<length/2; i+=n64) {
                     indent();
                     for(j=i; j<std::min(i+n64,length/2); j++) {
-                        xml+=sprintf(xml,format,*(uint64_t *)&data[2*j]);
+                        xml+=snprintf(xml,strlen(xml),format,*(uint64_t *)&data[2*j]);
                     }
-                    xml+=sprintf(xml,"\n");
+                    xml+=snprintf(xml,strlen(xml),"\n");
                 }
                 decreaseIndent();
             }
@@ -1235,17 +1235,17 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
             if(!no_data) {
                 increaseIndent();
                 if (xtod) {
-                    sprintf(format,"%%11d  ");
+                    snprintf(format,strlen(format),"%%11d  ");
                 }
                 else {
-                    sprintf(format,"0x%%08x  ");
+                    snprintf(format,strlen(format),"0x%%08x  ");
                 }
                 for(i=0; i<length; i+=n32) {
                     indent();
                     for(j=i; j<std::min((i+n32),length); j++) {
-                        xml+=sprintf(xml,format,data[j]);
+                        xml+=snprintf(xml,strlen(xml),format,data[j]);
                     }
-                    xml+=sprintf(xml,"\n");
+                    xml+=snprintf(xml,strlen(xml),"\n");
                 }
                 decreaseIndent();
             }
@@ -1292,18 +1292,18 @@ static void dump_data(unsigned int *data, int type, int length, int padding, int
             if(!no_data) {
                 increaseIndent();
                 if (xtod) {
-                    sprintf(format,"%%11u  ");
+                    snprintf(format,strlen(format),"%%11u  ");
                 }
                 else {
-                    sprintf(format,"0x%%08x  ");
+                    snprintf(format,strlen(format),"0x%%08x  ");
                 }
 
                 for(i=0; i<length; i+=n32) {
                     indent();
                     for(j=i; j<std::min(i+n32,length); j++) {
-                        xml+=sprintf(xml,format,(unsigned int)data[j]);
+                        xml+=snprintf(xml,strlen(xml),format,(unsigned int)data[j]);
                     }
-                    xml+=sprintf(xml,"\n");
+                    xml+=snprintf(xml,strlen(xml),"\n");
                 }
                 decreaseIndent();
             }
@@ -1435,7 +1435,7 @@ static const char *get_matchname() {
 
 /*---------------------------------------------------------------- */
 void evio_xmldump_done(char *string, int len) {
-    sprintf(string," ");
+    snprintf(string,strlen(string)," ");
     return;
 }
 
